@@ -1,0 +1,6 @@
+@EndUserText.label: 'ZC_MaintNotificationTP'
+@MappingRole: true
+define role ZC_MaintNotificationTP {
+  grant select on ZC_MaintNotificationTP
+  where INHERITING CONDITIONS FROM ENTITY ZR_MaintNotificationTP ;
+}

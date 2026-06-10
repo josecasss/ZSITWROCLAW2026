@@ -1,0 +1,11 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "SAP Object Node Type ZMAINT_NOTIFA",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "name": "ZMAINT_NOTIFA",
+  "sapObjectType": "ZMAINT_NOTIFA",
+  "rootNode": true
+}

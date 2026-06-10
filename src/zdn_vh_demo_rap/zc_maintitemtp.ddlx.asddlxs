@@ -1,0 +1,76 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: { typeName: 'Maintenance Item',
+                  typeNamePlural: 'Maintenance Items',
+                  title: { type: #STANDARD, value: 'ItemNo' } }
+
+annotate view ZC_MaintItemTP with
+
+{
+  @EndUserText.label: 'Item Number'
+  @UI.facet: [ { id: 'General', type: #IDENTIFICATION_REFERENCE, label: 'General Information', position: 10 } ]
+  @UI.identification: [ { position: 10 } ]
+  @UI.lineItem: [ { position: 10, importance: #HIGH } ]
+  ItemNo;
+
+
+  @EndUserText.label: 'Activity Code'
+  @UI.identification: [ { position: 20 } ]
+  @UI.lineItem: [ { position: 20, importance: #HIGH } ]
+  ActivityCode;
+
+
+  @EndUserText.label: 'Spare Part'
+  @UI.identification: [ { position: 30 } ]
+  @UI.lineItem: [ { position: 30 } ]
+  SparePartId;
+
+
+  @EndUserText.label: 'Required Quantity'
+  @UI.identification: [ { position: 40 } ]
+  @UI.lineItem: [ { position: 40 } ]
+  RequiredQty;
+
+
+  @EndUserText.label: 'Unit'
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'I_UnitOfMeasureStdVH', element: 'UnitOfMeasure' } } ]
+  QtyUom;
+
+
+//  @UI.identification: [ { position: 60 } ]
+//   @UI.lineItem: [ { position: 60, criticality: 'ItemStatusCriticality', importance: #HIGH } ]
+//  @EndUserText.label: 'Status'
+  
+  @UI.hidden: true
+  ItemStatus;
+
+
+  @UI.hidden: true
+  NotifUUID;
+
+
+  @UI.hidden: true
+  ItemUUID;
+
+
+  @UI.hidden: true
+  CreatedBy;
+
+
+  @UI.hidden: true
+  CreatedAt;
+
+
+  @UI.hidden: true
+  LastChangedBy;
+
+
+  @UI.hidden: true
+  LastChangedAt;
+
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

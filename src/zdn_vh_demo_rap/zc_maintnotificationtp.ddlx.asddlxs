@@ -1,0 +1,103 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: { typeName: 'Maintenance Notification',
+                  typeNamePlural: 'Maintenance Notifications',
+                  title: { type: #STANDARD, value: 'Description' },
+                  description: { type: #STANDARD, value: 'EquipmentID' } }
+
+annotate view ZC_MaintNotificationTP with
+
+{
+  @UI.facet: [ { id: 'Header', type: #IDENTIFICATION_REFERENCE, label: 'General Information', position: 10 },
+               { id: 'MaintItems',
+                 type: #LINEITEM_REFERENCE,
+                 label: 'Maintenance Items',
+                 targetElement: '_MaintItem',
+                 position: 20 } ]
+  @UI.identification: [ { position: 10 } ]
+  @UI.lineItem: [ { position: 10, importance: #HIGH } ]
+  @UI.selectionField: [ { position: 10 } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_PlantVH', element: 'PlantID' } } ]
+  @EndUserText.label: 'Plant'
+  PlantID;
+
+
+  @UI.identification: [ { position: 20 } ]
+  @UI.lineItem: [ { position: 20, importance: #HIGH } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_EquipmentVH', element: 'EquipmentId' },
+                                        additionalBinding: [ { localElement: 'PlantID',
+                                                               element: 'PlantId',
+                                                               usage:  #FILTER_AND_RESULT } ] } ]
+  @EndUserText.label: 'Equipment'
+  EquipmentID;
+
+
+  @EndUserText.label: 'Damage Code'
+  @UI.identification: [ { position: 30 } ]
+  @UI.lineItem: [ { position: 30 } ]
+  DamageCodeID;
+
+
+  @EndUserText.label: 'Technician'
+  @UI.identification: [ { position: 40 } ]
+  @UI.lineItem: [ { position: 40 } ]
+  TechnicianID;
+
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZC_FuncLocVH', element: 'FuncLocId' },
+                                        presentationVariantQualifier: 'HIERARCHY',
+                                        additionalBinding: [ { localElement: 'PlantID'} ] } ]
+  @EndUserText.label: 'Functional location'
+  @UI.identification: [ { position: 45 } ]
+  @UI.lineItem: [ { position: 45 } ]
+  FuncLocId;
+
+  @EndUserText.label: 'Priority'
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  @UI.selectionField: [ { position: 30 } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_Priority_VH', element: 'PriorityCode' } } ]
+  @UI.textArrangement: #TEXT_ONLY
+  Priority;
+
+  @UI.hidden: true
+  PriorityText;
+
+  @EndUserText.label: 'Status'
+  @UI.identification: [ { position: 60, criticality: 'StatusCriticality' } ]
+  @UI.lineItem: [ { position: 60, criticality: 'StatusCriticality', importance: #HIGH } ]
+  @UI.selectionField: [ { position: 20 } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_Status_VH', element: 'StatusCode' } } ]
+  @UI.textArrangement: #TEXT_ONLY
+  Status;
+
+  @UI.hidden: true
+  StatusText;
+
+  @EndUserText.label: 'Description'
+  @UI.identification: [ { position: 70 } ]
+  @UI.multiLineText: true
+  Description;
+
+  @EndUserText.label: 'SLA Hours'
+  @UI.identification: [ { position: 80 } ]
+  @UI.lineItem: [ { position: 80 } ]
+  SlaHours;
+
+  @UI.hidden: true
+  NotifUUID;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

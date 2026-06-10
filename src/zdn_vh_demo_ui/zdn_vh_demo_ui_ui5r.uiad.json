@@ -1,0 +1,35 @@
+{
+  "formatVersion": "2",
+  "header": {
+    "description": "An SAP Fiori application.",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "appType": "ui5",
+    "catalogId": "SAP_TC_UI5_REPO_UIAD",
+    "targetMappingTitle": "Maintenance Notification"
+  },
+  "ui5AppDetails": {
+    "appId": "zdn00uxx"
+  },
+  "navigation": {
+    "targetMappingId": "ZDN_VH_DEMO_UI_UI5R_TM",
+    "semanticObject": "zdn00uxx",
+    "action": "display",
+    "desktop": true,
+    "tablet": true,
+    "phone": true
+  },
+  "tiles": [
+    {
+      "id": "ZDN_VH_DEMO_UI_UI5R_AL",
+      "tileType": "static",
+      "isDefault": true,
+      "standard": {
+        "title": "Maintenance Notification",
+        "subtitle": "Maintenance"
+      }
+    }
+  ]
+}

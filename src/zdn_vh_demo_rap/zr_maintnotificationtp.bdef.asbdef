@@ -1,0 +1,106 @@
+managed implementation in class ZBP_R_MaintNotification unique;
+strict ( 2 );
+with draft;
+extensible;
+define behavior for ZR_MaintNotificationTP alias MaintNotification
+extensible
+persistent table zmaint_notifa
+draft table zmaint_notifd
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global )
+{
+  field ( readonly )
+  NotifUUID,
+  CreatedBy,
+  CreatedAt,
+  LastChangedBy,
+  LastChangedAt,
+  LocalLastChangedAt;
+
+  field ( numbering : managed )
+  NotifUUID;
+
+
+  create;
+  update;
+  delete;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation validatePlant;
+  }
+
+  determination setInitialStatus on modify { create; }
+  determination setSlaFromPriority on modify { field Priority; }
+  validation validatePlant on save { field PlantId; }
+
+  side effects
+  {
+    field PlantId affects field EquipmentId;
+    field Priority affects field SlaHours;
+  }
+
+  association _MaintItem { create; with draft; }
+
+  mapping for zmaint_notifa corresponding extensible
+    {
+      NotifUUID          = NOTIF_UUID;
+      PlantID            = PLANT_ID;
+      EquipmentID        = EQUIPMENT_ID;
+      DamageCodeID       = DAMAGE_CODE_ID;
+      TechnicianID       = TECHNICIAN_ID;
+      FuncLocId          = FUNCLOC_ID;
+      Priority           = PRIORITY;
+      Status             = STATUS;
+      Description        = DESCRIPTION;
+      SlaHours           = SLA_HOURS;
+      CreatedBy          = CREATED_BY;
+      CreatedAt          = CREATED_AT;
+      LastChangedBy      = LAST_CHANGED_BY;
+      LastChangedAt      = LAST_CHANGED_AT;
+      LocalLastChangedAt = LOCAL_LAST_CHANGED_AT;
+    }
+
+}
+
+define behavior for ZR_MaintItemTP alias MaintItem
+persistent table zmaint_itema
+draft table zmaint_itemd
+lock dependent by _Notification
+authorization dependent by _Notification
+etag master LocalLastChangedAt
+{
+  field ( readonly, numbering : managed ) ItemUUID;
+  field ( readonly ) NotifUuid, ItemNo;
+  field ( readonly ) CreatedBy, CreatedAt,
+  LastChangedBy, LastChangedAt, LocalLastChangedAt;
+
+  update;
+  delete;
+
+  determination setItemNo on modify { create; }
+
+  association _Notification { with draft; }
+
+  mapping for zmaint_itema
+    {
+      NotifUuid          = notif_uuid;
+      ItemUuid           = item_uuid;
+      ItemNo             = item_no;
+      ActivityCode       = activity_code;
+      SparePartId        = spare_part_id;
+      RequiredQty        = required_qty;
+      QtyUom             = qty_uom;
+      ItemStatus         = item_status;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+}

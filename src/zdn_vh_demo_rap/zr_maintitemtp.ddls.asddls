@@ -1,0 +1,52 @@
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+
+@EndUserText.label: 'Maintenance item'
+
+@Metadata.ignorePropagatedAnnotations: true
+
+define view entity ZR_MaintItemTP
+  as select from zmaint_itema as MaintItem
+
+  association to parent ZR_MaintNotificationTP as _Notification on $projection.NotifUUID = _Notification.NotifUUID
+
+{
+  key notif_uuid            as NotifUUID,
+  key item_uuid             as ItemUUID,
+
+      item_no               as ItemNo,
+      activity_code         as ActivityCode,
+      spare_part_id         as SparePartId,
+
+      @Semantics.quantity.unitOfMeasure: 'QtyUom'
+      required_qty          as RequiredQty,
+      
+      qty_uom               as QtyUom,
+
+      item_status           as ItemStatus,
+     
+//        case item_status
+//          when 'OP' then 1
+//          when 'WP' then 2
+//          when 'CO' then 3
+//          else 0
+//        end
+//       as ItemStatusCriticality,
+      
+      @Semantics.user.createdBy: true
+      created_by            as CreatedBy,
+
+      @Semantics.systemDateTime.createdAt: true
+      created_at            as CreatedAt,
+
+      @Semantics.user.localInstanceLastChangedBy: true
+      last_changed_by       as LastChangedBy,
+
+      @Semantics.systemDateTime.lastChangedAt: true
+      last_changed_at       as LastChangedAt,
+
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      local_last_changed_at as LocalLastChangedAt,
+
+      // Make association public
+      _Notification
+}
