@@ -7,10 +7,12 @@ define view entity ZI_EquipmentVH as select from zmaint_equip {
       @UI.selectionField: [{ position: 10 }]
       @EndUserText.label: 'Equipment Id'       
       @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.8
   key equipment_id  as EquipmentId,
       @UI.lineItem: [{ position: 20 }]
       @EndUserText.label: 'Description'    
       @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.8
       equip_text    as EquipText,
       @UI.lineItem: [{ position: 30 }]
       @UI.selectionField: [{ position: 20 }]

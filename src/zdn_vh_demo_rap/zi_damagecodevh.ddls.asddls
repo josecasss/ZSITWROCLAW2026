@@ -1,4 +1,4 @@
-@AccessControl.authorizationCheck: #CHECK
+@AccessControl.authorizationCheck: #NOT_ALLOWED
 @EndUserText.label: 'Damage Code Value Help'
 @ObjectModel.resultSet.sizeCategory: #XS
 @Search.searchable: true

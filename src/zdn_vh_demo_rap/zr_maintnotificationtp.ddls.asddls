@@ -1,4 +1,4 @@
-@AccessControl.authorizationCheck: #MANDATORY
+@AccessControl.authorizationCheck: #NOT_ALLOWED
 
 @EndUserText.label: ' Core Data Service Entity'
 

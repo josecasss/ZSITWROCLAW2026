@@ -1,4 +1,4 @@
-@AccessControl.authorizationCheck: #MANDATORY
+@AccessControl.authorizationCheck: #NOT_ALLOWED
 
 @EndUserText.label: 'Core Data Service Entity'
 
@@ -6,7 +6,7 @@
 @Metadata.ignorePropagatedAnnotations: true
 
 @ObjectModel.sapObjectNodeType.name: 'ZMAINT_NOTIFA'
-
+@Search.searchable: true
 define root view entity ZC_MaintNotificationTP
   provider contract transactional_query
   as projection on ZR_MaintNotificationTP
@@ -15,6 +15,8 @@ define root view entity ZC_MaintNotificationTP
   key NotifUUID,
 
       PlantID,
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.8 // Permite pequeños errores tipográficos al buscar
       EquipmentID,
       DamageCodeID,
       TechnicianID,
@@ -48,7 +50,7 @@ define root view entity ZC_MaintNotificationTP
       @Semantics.systemDateTime.localInstanceLastChangedAt: true
       LocalLastChangedAt,
 
-      _MaintItem : redirected to  composition child ZC_MaintItemTP,
+      _MaintItem : redirected to composition child ZC_MaintItemTP,
 
       _Status,
       _Priority

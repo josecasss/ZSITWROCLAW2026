@@ -258,7 +258,7 @@ CLASS zcl_dn_data_generator IMPLEMENTATION.
                              spare_part_id = 'SP-VIBR-SENSOR'
                              required_qty  = '1.000'
                              qty_uom       = 'EA'
-                             item_status   = '109' )
+                             item_status   = 'CA' )
                            ( notif_uuid    = u5
                              item_uuid     = cl_system_uuid=>create_uuid_x16_static( )
                              item_no       = '0020'
@@ -266,7 +266,7 @@ CLASS zcl_dn_data_generator IMPLEMENTATION.
                              spare_part_id = 'SP-BEARING-001'
                              required_qty  = '2.000'
                              qty_uom       = 'EA'
-                             item_status   = '109' ) ).
+                             item_status   = 'CA' ) ).
       CATCH cx_uuid_error.
         " handle exception
     ENDTRY.

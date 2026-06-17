@@ -10,6 +10,61 @@ ENDCLASS.
 CLASS lhc_maintitem IMPLEMENTATION.
 
   METHOD setItemNo.
+
+DATA: max_item_no TYPE i.
+DATA update_table TYPE TABLE FOR UPDATE ZR_MAINTNOTIFICATIONTP\\MaintItem.
+
+" Read all items that need ItemNo assignment
+READ ENTITIES OF ZR_MAINTNOTIFICATIONTP IN LOCAL MODE
+  ENTITY MaintItem
+    FIELDS ( ItemNo NotifUuid )
+    WITH CORRESPONDING #( keys )
+  RESULT DATA(items).
+
+" Filter items that already have ItemNo assigned
+DELETE items WHERE ItemNo IS NOT INITIAL.
+CHECK items IS NOT INITIAL.
+
+" Process each parent notification
+DATA(notif_uuids) = items.
+SORT notif_uuids BY NotifUuid.
+DELETE ADJACENT DUPLICATES FROM notif_uuids COMPARING NotifUuid.
+
+LOOP AT notif_uuids INTO DATA(notif_entry).
+
+  " Read all existing items for this notification to find max ItemNo
+  READ ENTITIES OF ZR_MAINTNOTIFICATIONTP IN LOCAL MODE
+    ENTITY MaintNotification BY \_MaintItem
+      FIELDS ( ItemNo )
+      WITH VALUE #( ( %tky-NotifUuid = notif_entry-NotifUuid ) )
+    RESULT DATA(existing_items).
+
+  " Find maximum ItemNo
+  max_item_no = 0.
+  LOOP AT existing_items INTO DATA(existing_item).
+    IF existing_item-ItemNo > max_item_no.
+      max_item_no = existing_item-ItemNo.
+    ENDIF.
+  ENDLOOP.
+
+  " Assign sequential ItemNo to new items for this notification
+  LOOP AT items INTO DATA(item) WHERE NotifUuid = notif_entry-NotifUuid.
+    max_item_no = max_item_no + 10.
+    APPEND VALUE #(
+      %tky   = item-%tky
+      ItemNo = max_item_no
+    ) TO update_table.
+  ENDLOOP.
+
+ENDLOOP.
+
+" Update all items with new ItemNo in a single MODIFY statement
+IF update_table IS NOT INITIAL.
+  MODIFY ENTITIES OF ZR_MAINTNOTIFICATIONTP IN LOCAL MODE
+    ENTITY MaintItem
+      UPDATE FIELDS ( ItemNo )
+      WITH update_table.
+ENDIF.
   ENDMETHOD.
 
 ENDCLASS.
