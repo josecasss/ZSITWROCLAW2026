@@ -42,6 +42,7 @@ authorization master ( global )
   action ( features : instance, authorization : update ) cancelNotification result [1] $self;
   action ( features : instance, authorization : update ) reOpen result [1] $self;
 
+
   // List Report actions
   action ( features : instance, authorization : update ) reassignTechnician
     parameter Z_AE_MAINT_CHANGE_TECH result [1] $self;
@@ -50,16 +51,14 @@ authorization master ( global )
     parameter Z_AE_MAINT_CHANGE_STATUS result [1] $self;
 
   // List Report - Factory action (create from template)
-  //  factory action createFromTemplate
-  //    parameter Z_AE_MAINT_CREATE_TEMPLATE result [1] $self;
+  factory action createFromTemplate parameter Z_AE_MAINT_CREATE_TEMPLATE [1];
 
   //Validations al crear y guardar
-
-  validation validatePlant      on save { field PlantId; }
-  validation validateEquipment  on save { field EquipmentID; }
+  validation validatePlant on save { field PlantId; }
+  validation validateEquipment on save { field EquipmentID; }
   validation validateDamageCode on save { field DamageCodeID; }
   validation validateTechnician on save { field TechnicianID; }
-  validation validateFuncLoc    on save { field FuncLocId; }
+  validation validateFuncLoc on save { field FuncLocId; }
 
   draft action Activate optimized;
   draft action Discard;
@@ -75,27 +74,33 @@ authorization master ( global )
     validation validateFuncLoc;
   }
 
-  determination setInitialStatus   on modify { create; }
+  determination setInitialStatus on modify { create; }
   determination setSlaFromPriority on modify { field Priority; }
   determination setPriorityFromUrgentKeyword on modify { create; field Description; }
 
   // Determine actions: wrappers que conectan cada validation con los side effects
-  determine action validatePlantAction      { validation validatePlant; }
-  determine action validateEquipmentAction  { validation validateEquipment; }
+  determine action validatePlantAction { validation validatePlant; }
+  determine action validateEquipmentAction { validation validateEquipment; }
   determine action validateDamageCodeAction { validation validateDamageCode; }
   determine action validateTechnicianAction { validation validateTechnician; }
-  determine action validateFuncLocAction    { validation validateFuncLoc; }
+  determine action validateFuncLocAction { validation validateFuncLoc; }
 
   side effects
   {
     field PlantId affects field EquipmentId;
     field Priority affects field SlaHours;
 
-    determine action validatePlantAction      executed on field PlantId      affects messages;
-    determine action validateEquipmentAction  executed on field EquipmentID  affects messages;
+    field TechnicianID affects field _Technician.FirstName,
+                            field _Technician.LastName,
+                            field _Technician.Email,
+                            field _Technician.Phone,
+                            field _Technician.Availability;
+
+    determine action validatePlantAction executed on field PlantId affects messages;
+    determine action validateEquipmentAction executed on field EquipmentID affects messages;
     determine action validateDamageCodeAction executed on field DamageCodeID affects messages;
     determine action validateTechnicianAction executed on field TechnicianID affects messages;
-    determine action validateFuncLocAction    executed on field FuncLocId    affects messages;
+    determine action validateFuncLocAction executed on field FuncLocId affects messages;
   }
 
   association _MaintItem { create; with draft; }
@@ -136,10 +141,9 @@ etag master LocalLastChangedAt
   update;
   delete;
 
-  determination setItemNo            on modify { create; }
+  determination setItemNo on modify { create; }
   determination setItemInitialStatus on modify { create; }
 
-  // Object Page - Maintenance Items actions
   action ( features : instance, authorization : update ) markItemCompleted result [1] $self;
   action ( features : instance, authorization : update ) markItemCancelled result [1] $self;
 

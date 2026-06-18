@@ -9,17 +9,22 @@ annotate view ZC_MaintNotificationTP with
 
 {
   @UI.facet: [ { id: 'Header', type: #IDENTIFICATION_REFERENCE, label: 'General Information', position: 10 },
+               { id: 'TechnicianDetails',
+                 type: #FIELDGROUP_REFERENCE,
+                 label: 'Technician Details',
+                 targetQualifier: 'TechGroup',
+                 position: 20 },
                { id: 'MaintItems',
                  type: #LINEITEM_REFERENCE,
                  label: 'Maintenance Items',
                  targetElement: '_MaintItem',
-                 position: 20 } ]
+                 position: 30 } ]
 
   @UI: { lineItem: [ { position :10 ,
-                    importance: #HIGH }, 
-                    { type: #FOR_ACTION,    //Marks this field for action usage in Fiori
-                      dataAction: 'changePriority', // Name of the action METHOD
-                      label: 'Change Priority', // Label of the action in the Fiori application
+                    importance: #HIGH },
+                    { type: #FOR_ACTION,
+                      dataAction: 'changePriority',
+                      label: 'Change Priority',
                       position: 10 },
                     { type: #FOR_ACTION,
                       dataAction: 'reassignTechnician',
@@ -29,10 +34,9 @@ annotate view ZC_MaintNotificationTP with
                       dataAction: 'createFromTemplate',
                       label: 'Create From Template',
                       position: 30 }],
-  identification: [{ position: 10 },    //Identification is used in the details of the Fiori application *Details of the instance*
-         //Replicate this here to add the actions in the identification facet (:
+  identification: [{ position: 10 },
                          { type: #FOR_ACTION,
-                           dataAction: 'starWork',
+                           dataAction: 'startWork',
                            label: 'Start Work',
                            position: 10 },
                          { type: #FOR_ACTION,
@@ -47,14 +51,18 @@ annotate view ZC_MaintNotificationTP with
                            dataAction: 'reOpen',
                            label: 'Re Open',
                            position: 40 } ],
-  
+
   selectionField: [ { position: 10 } ] }
   @Consumption.valueHelpDefinition: [{
     entity: { name: 'ZI_PlantVH', element: 'PlantID' },
     additionalBinding: [ { localElement: 'PlantID', element: 'PlantID', usage: #RESULT } ]
   }]
+  @UI.textArrangement: #TEXT_LAST
   @EndUserText.label: 'Plant'
   PlantID;
+
+  @UI.hidden: true
+  PlantName;
 
 
   @UI.identification: [ { position: 20 } ]
@@ -63,8 +71,12 @@ annotate view ZC_MaintNotificationTP with
                                         additionalBinding: [ { localElement: 'PlantID',
                                                                element: 'PlantId',
                                                                usage:  #FILTER_AND_RESULT } ] } ]
+  @UI.textArrangement: #TEXT_LAST
   @EndUserText.label: 'Equipment'
   EquipmentID;
+
+  @UI.hidden: true
+  EquipmentText;
 
 
   @EndUserText.label: 'Damage Code'
@@ -77,7 +89,8 @@ annotate view ZC_MaintNotificationTP with
   @EndUserText.label: 'Technician'
   @UI.identification: [ { position: 40 } ]
   @UI.lineItem: [ { position: 40 } ]
-  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_TECHNICIANSVH', element: 'TechnicianId' } } ]  
+  @UI.selectionField: [ { position: 11 } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_TECHNICIANSVH', element: 'TechnicianId' } } ]
   TechnicianID;
 
   @Consumption.valueHelpDefinition: [ { entity: { name: 'ZC_FuncLocVH', element: 'FuncLocId' },
@@ -102,7 +115,7 @@ annotate view ZC_MaintNotificationTP with
   @EndUserText.label: 'Status'
   @UI.identification: [ { position: 60, criticality: 'StatusCriticality' } ]
   @UI.lineItem: [ { position: 60, criticality: 'StatusCriticality', importance: #HIGH } ]
-  @UI.selectionField: [ { position: 20 } ]
+  @UI.selectionField: [ { position: 30 } ]
   @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_Status_VH', element: 'StatusCode' } } ]
   @UI.textArrangement: #TEXT_ONLY
   Status;
@@ -119,6 +132,26 @@ annotate view ZC_MaintNotificationTP with
   @UI.identification: [ { position: 80 } ]
   @UI.lineItem: [ { position: 80 } ]
   SlaHours;
+
+  @EndUserText.label: 'First Name'
+  @UI.fieldGroup: [ { qualifier: 'TechGroup', position: 10 } ]
+  TechFirstName;
+
+  @EndUserText.label: 'Last Name'
+  @UI.fieldGroup: [ { qualifier: 'TechGroup', position: 20 } ]
+  TechLastName;
+
+  @EndUserText.label: 'Email'
+  @UI.fieldGroup: [ { qualifier: 'TechGroup', position: 30 } ]
+  TechEmail;
+
+  @EndUserText.label: 'Phone'
+  @UI.fieldGroup: [ { qualifier: 'TechGroup', position: 40 } ]
+  TechPhone;
+
+  @EndUserText.label: 'Availability'
+  @UI.fieldGroup: [ { qualifier: 'TechGroup', position: 50 } ]
+  TechAvailability;
 
   @UI.hidden: true
   NotifUUID;

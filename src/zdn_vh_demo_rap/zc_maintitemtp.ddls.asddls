@@ -11,8 +11,11 @@ define view entity ZC_MaintItemTP as projection on ZR_MaintItemTP
     SparePartId,    
     RequiredQty,
     QtyUom,
+
+//    @ObjectModel.text.element: [ 'ItemStatusText' ]
     ItemStatus,
-//   ItemStatusCriticality,
+    _ItemStatusVH.StatusText as ItemStatusText,
+
     CreatedBy,
     CreatedAt,
     LastChangedBy,
@@ -20,5 +23,6 @@ define view entity ZC_MaintItemTP as projection on ZR_MaintItemTP
     LocalLastChangedAt,
     
     /* Associations */
-    _Notification : redirected to parent ZC_MaintNotificationTP
+    _Notification : redirected to parent ZC_MaintNotificationTP,
+    _ItemStatusVH
 }

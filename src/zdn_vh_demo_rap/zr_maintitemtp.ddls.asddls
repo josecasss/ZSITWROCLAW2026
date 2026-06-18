@@ -8,6 +8,7 @@ define view entity ZR_MaintItemTP
   as select from zmaint_itema as MaintItem
 
   association to parent ZR_MaintNotificationTP as _Notification on $projection.NotifUUID = _Notification.NotifUUID
+  association [0..1] to ZI_DN_STATUS_ITEM_VH   as _ItemStatusVH  on $projection.ItemStatus = _ItemStatusVH.ItemStatus
 
 {
   key notif_uuid            as NotifUUID,
@@ -23,15 +24,7 @@ define view entity ZR_MaintItemTP
       qty_uom               as QtyUom,
 
       item_status           as ItemStatus,
-     
-//        case item_status
-//          when 'OP' then 1
-//          when 'WP' then 2
-//          when 'CO' then 3
-//          else 0
-//        end
-//       as ItemStatusCriticality,
-      
+
       @Semantics.user.createdBy: true
       created_by            as CreatedBy,
 
@@ -48,5 +41,6 @@ define view entity ZR_MaintItemTP
       local_last_changed_at as LocalLastChangedAt,
 
       // Make association public
-      _Notification
+      _Notification,
+      _ItemStatusVH
 }

@@ -20,17 +20,17 @@ use etag
   use action Prepare;
   use action changePriority;
   use action reassignTechnician;
-  //  use action createFromTemplate;
+  use action createFromTemplate;
   use action startWork;
   use action complete;
   use action cancelNotification;
   use action reOpen;
 
-
 }
 
 define behavior for ZC_MaintItemTP alias MaintItem
 {
+
   use update;
   use delete;
   use association _Notification { with draft; }

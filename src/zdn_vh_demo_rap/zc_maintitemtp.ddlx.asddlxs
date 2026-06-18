@@ -12,16 +12,15 @@ annotate view ZC_MaintItemTP with
   @UI.identification: [ { position: 10 } ]
   @UI: { lineItem: [ { position :10 ,
                     importance: #HIGH },
-                    { type: #FOR_ACTION,    //Marks this field for action usage in Fiori
-                      dataAction: 'markItemCompleted', // Name of the action METHOD
-                      label: 'Mark Item Completed', // Label of the action in the Fiori application
+                    { type: #FOR_ACTION,
+                      dataAction: 'markItemCompleted',
+                      label: 'Mark Item Completed',
                       position: 11 },
                     { type: #FOR_ACTION,
                       dataAction: 'markItemCancelled',
                       label: 'Mark Item Cancelled',
                       position: 20 }] }
   ItemNo;
-
 
   @EndUserText.label: 'Activity Code'
   @UI.identification: [ { position: 20 } ]
@@ -47,13 +46,16 @@ annotate view ZC_MaintItemTP with
   @Consumption.valueHelpDefinition: [ { entity: { name: 'I_UnitOfMeasureStdVH', element: 'UnitOfMeasure' } } ]
   QtyUom;
 
-  
+
   @UI.identification: [ { position: 60 } ]
   @UI.lineItem: [ { position: 60 } ]
   @EndUserText.label: 'Status'
   @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_STATUS_ITEM_VH', element: 'ItemStatus' } } ]
+  //  @UI.textArrangement: #TEXT_ONLY
   ItemStatus;
 
+  @UI.hidden: true
+  ItemStatusText;
 
   @UI.hidden: true
   NotifUUID;

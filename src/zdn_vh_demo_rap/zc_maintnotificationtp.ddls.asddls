@@ -14,10 +14,16 @@ define root view entity ZC_MaintNotificationTP
 {
   key NotifUUID,
 
+      @ObjectModel.text.element: [ 'PlantName' ]
       PlantID,
+      _Plant.PlantName as PlantName,
+
       @Search.defaultSearchElement: true
-      @Search.fuzzinessThreshold: 0.8 // Permite pequeños errores tipográficos al buscar
+      @Search.fuzzinessThreshold: 0.8
+      @ObjectModel.text.element: [ 'EquipmentText' ]
       EquipmentID,
+      _Equipment.EquipText as EquipmentText,
+
       DamageCodeID,
       TechnicianID,
       FuncLocId,
@@ -34,6 +40,17 @@ define root view entity ZC_MaintNotificationTP
 
       Description,
       SlaHours,
+
+      _Technician.FirstName     as TechFirstName,
+      _Technician.LastName      as TechLastName,
+
+      @Semantics.eMail.address: true
+      _Technician.Email         as TechEmail,
+
+      @Semantics.telephone.type: [#CELL]
+      _Technician.Phone         as TechPhone,
+
+      _Technician.Availability  as TechAvailability,
 
       @Semantics.user.createdBy: true
       CreatedBy,
@@ -53,5 +70,8 @@ define root view entity ZC_MaintNotificationTP
       _MaintItem : redirected to composition child ZC_MaintItemTP,
 
       _Status,
-      _Priority
+      _Priority,
+      _Technician,
+      _Plant,
+      _Equipment
 }

@@ -6,17 +6,22 @@
 define view entity ZI_DN_TECHNICIANSVH
   as select from zmaint_techns
 {
-      @Search.defaultSearchElement: true     // Default search element for the TravelID
-      @Search.fuzzinessThreshold: 0.8       // Fuzziness threshold for better search results     *Umbral 0.0 .. 1.0 to allow searchs according to exact match
-      @Search.ranking: #MEDIUM //  Ranking for search results
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.8
+      @Search.ranking: #MEDIUM
   key technician_id as TechnicianId,
       sap_user      as SapUser,
-      @Search.defaultSearchElement: true     // Default search element for the TravelID
-      @Search.fuzzinessThreshold: 0.8       // Fuzziness threshold for better search results     *Umbral 0.0 .. 1.0 to allow searchs according to exact match
-      @Search.ranking: #MEDIUM //  Ranking for search results
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.8
+      @Search.ranking: #MEDIUM
       first_name    as FirstName,
       last_name     as LastName,
+
+      @Semantics.eMail.address: true
       email         as Email,
+
+      @Semantics.telephone.type: [#CELL]
       phone         as Phone,
+
       is_available  as Availability
 }

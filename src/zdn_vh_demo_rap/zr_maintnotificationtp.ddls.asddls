@@ -12,6 +12,9 @@ define root view entity ZR_MaintNotificationTP
   composition [0..*] of ZR_MaintItemTP    as _MaintItem
   association [0..1] to ZI_DN_Priority_VH as _Priority  on $projection.Priority = _Priority.PriorityCode
   association [0..1] to ZI_DN_Status_VH   as _Status    on $projection.Status = _Status.StatusCode
+  association [0..1] to ZI_DN_TECHNICIANSVH as _Technician on $projection.TechnicianID = _Technician.TechnicianId
+  association [0..1] to ZI_PlantVH        as _Plant     on $projection.PlantID = _Plant.PlantID
+  association [0..1] to ZI_EquipmentVH    as _Equipment on $projection.EquipmentID = _Equipment.EquipmentId
 
 {
   key notif_uuid            as NotifUUID,
@@ -51,5 +54,8 @@ define root view entity ZR_MaintNotificationTP
 
       _MaintItem,
       _Priority,
-      _Status
+      _Status,
+      _Technician,
+      _Plant,
+      _Equipment
 }
