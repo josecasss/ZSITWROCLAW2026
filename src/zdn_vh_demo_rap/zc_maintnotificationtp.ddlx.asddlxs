@@ -15,9 +15,40 @@ annotate view ZC_MaintNotificationTP with
                  targetElement: '_MaintItem',
                  position: 20 } ]
 
-  @UI.identification: [ { position: 10 } ]
-  @UI.lineItem: [ { position: 10, importance: #HIGH } ]
-  @UI.selectionField: [ { position: 10 } ]
+  @UI: { lineItem: [ { position :10 ,
+                    importance: #HIGH }, 
+                    { type: #FOR_ACTION,    //Marks this field for action usage in Fiori
+                      dataAction: 'changePriority', // Name of the action METHOD
+                      label: 'Change Priority', // Label of the action in the Fiori application
+                      position: 10 },
+                    { type: #FOR_ACTION,
+                      dataAction: 'reassignTechnician',
+                      label: 'Reassign Technician',
+                      position: 20 },
+                    { type: #FOR_ACTION,
+                      dataAction: 'createFromTemplate',
+                      label: 'Create From Template',
+                      position: 30 }],
+  identification: [{ position: 10 },    //Identification is used in the details of the Fiori application *Details of the instance*
+         //Replicate this here to add the actions in the identification facet (:
+                         { type: #FOR_ACTION,
+                           dataAction: 'starWork',
+                           label: 'Start Work',
+                           position: 10 },
+                         { type: #FOR_ACTION,
+                           dataAction: 'complete',
+                           label: 'Complete Work',
+                           position: 20 },
+                         { type: #FOR_ACTION,
+                           dataAction: 'cancelNotification',
+                           label: 'Cancel Notification',
+                           position: 30 },
+                         { type: #FOR_ACTION,
+                           dataAction: 'reOpen',
+                           label: 'Re Open',
+                           position: 40 } ],
+  
+  selectionField: [ { position: 10 } ] }
   @Consumption.valueHelpDefinition: [{
     entity: { name: 'ZI_PlantVH', element: 'PlantID' },
     additionalBinding: [ { localElement: 'PlantID', element: 'PlantID', usage: #RESULT } ]

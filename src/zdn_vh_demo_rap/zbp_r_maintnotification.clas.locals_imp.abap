@@ -4,6 +4,14 @@ class lhc_maintitem definition inheriting from cl_abap_behavior_handler.
 
     methods setItemNo for determine on modify
       importing keys for MaintItem~setItemNo.
+    methods get_instance_features for instance features
+      importing keys request requested_features for MaintItem result result.
+
+    methods markItemCancelled for modify
+      importing keys for action MaintItem~markItemCancelled result result.
+
+    methods markItemCompleted for modify
+      importing keys for action MaintItem~markItemCompleted result result.
 
 endclass.
 
@@ -101,6 +109,15 @@ CLASS lhc_maintitem IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD get_instance_features.
+  ENDMETHOD.
+
+  METHOD markItemCancelled.
+  ENDMETHOD.
+
+  METHOD markItemCompleted.
+  ENDMETHOD.
+
 ENDCLASS.
 *=================================================
 
@@ -119,6 +136,48 @@ class lhc_zr_maintnotificationtp definition inheriting from cl_abap_behavior_han
 
     methods validatePlant for validate on save
       importing keys for MaintNotification~validatePlant.
+    methods get_instance_features for instance features
+      importing keys request requested_features for MaintNotification result result.
+
+    methods changePriority for modify
+      importing keys for action MaintNotification~changePriority result result.
+
+*    methods createFromTemplate for modify
+*      importing keys for action MaintNotification~createFromTemplate result result.
+
+    methods reassignTechnician for modify
+      importing keys for action MaintNotification~reassignTechnician result result.
+    methods cancelNotification for modify
+      importing keys for action MaintNotification~cancelNotification result result.
+
+    methods complete for modify
+      importing keys for action MaintNotification~complete result result.
+
+*    methods markItemCancelled for modify
+*      importing keys for action MaintNotification~markItemCancelled result result.
+*
+*    methods markItemCompleted for modify
+*      importing keys for action MaintNotification~markItemCompleted result result.
+
+    methods reOpen for modify
+      importing keys for action MaintNotification~reOpen result result.
+
+    methods startWork for modify
+      importing keys for action MaintNotification~startWork result result.
+
+    methods validateDamageCode for validate on save
+      importing keys for MaintNotification~validateDamageCode.
+
+    methods validateEquipment for validate on save
+      importing keys for MaintNotification~validateEquipment.
+
+    methods validateFuncLoc for validate on save
+      importing keys for MaintNotification~validateFuncLoc.
+
+    methods validateTechnician for validate on save
+      importing keys for MaintNotification~validateTechnician.
+    methods setPriorityFromUrgentKeyword for determine on modify
+      importing keys for MaintNotification~setPriorityFromUrgentKeyword.
 endclass.
 
 class lhc_zr_maintnotificationtp implementation.
@@ -185,5 +244,45 @@ class lhc_zr_maintnotificationtp implementation.
       endif.
     endloop.
   endmethod.
+  METHOD get_instance_features.
+  ENDMETHOD.
+
+  METHOD changePriority.
+  ENDMETHOD.
+
+*  METHOD createFromTemplate.
+*  ENDMETHOD.
+
+  METHOD reassignTechnician.
+  ENDMETHOD.
+
+  METHOD cancelNotification.
+  ENDMETHOD.
+
+  METHOD complete.
+  ENDMETHOD.
+
+  METHOD reOpen.
+  ENDMETHOD.
+
+  METHOD startWork.
+  ENDMETHOD.
+
+  METHOD validateDamageCode.
+  ENDMETHOD.
+
+  METHOD validateEquipment.
+  ENDMETHOD.
+
+  METHOD validateFuncLoc.
+  ENDMETHOD.
+
+  METHOD validateTechnician.
+  ENDMETHOD.
+
+
+  METHOD setPriorityFromUrgentKeyword.
+  ENDMETHOD.
+
 endclass.
 
