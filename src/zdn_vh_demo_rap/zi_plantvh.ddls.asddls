@@ -9,5 +9,11 @@ define view entity ZI_PlantVH as select from zmaint_plant {
       @Search.defaultSearchElement: true
       plant_name as PlantName,
       @UI.lineItem: [{ position: 30 }]
+      @Consumption.valueHelpDefinition: [{ 
+        entity: { 
+          name: 'I_Country', 
+          element: 'Country' 
+        } 
+      }]
       country    as Country
 }

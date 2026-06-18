@@ -12,7 +12,7 @@ define view entity ZC_MaintItemTP as projection on ZR_MaintItemTP
     RequiredQty,
     QtyUom,
     ItemStatus,
-//    ItemStatusCriticality,
+//   ItemStatusCriticality,
     CreatedBy,
     CreatedAt,
     LastChangedBy,

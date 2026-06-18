@@ -14,10 +14,14 @@ annotate view ZC_MaintNotificationTP with
                  label: 'Maintenance Items',
                  targetElement: '_MaintItem',
                  position: 20 } ]
+
   @UI.identification: [ { position: 10 } ]
   @UI.lineItem: [ { position: 10, importance: #HIGH } ]
   @UI.selectionField: [ { position: 10 } ]
-  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_PlantVH', element: 'PlantID' } } ]
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_PlantVH', element: 'PlantID' },
+    additionalBinding: [ { localElement: 'PlantID', element: 'PlantID', usage: #RESULT } ]
+  }]
   @EndUserText.label: 'Plant'
   PlantID;
 
@@ -35,12 +39,14 @@ annotate view ZC_MaintNotificationTP with
   @EndUserText.label: 'Damage Code'
   @UI.identification: [ { position: 30 } ]
   @UI.lineItem: [ { position: 30 } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DamageCodeVH', element: 'DamageCode' } } ]
   DamageCodeID;
 
 
   @EndUserText.label: 'Technician'
   @UI.identification: [ { position: 40 } ]
   @UI.lineItem: [ { position: 40 } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_TECHNICIANSVH', element: 'TechnicianId' } } ]  
   TechnicianID;
 
   @Consumption.valueHelpDefinition: [ { entity: { name: 'ZC_FuncLocVH', element: 'FuncLocId' },
