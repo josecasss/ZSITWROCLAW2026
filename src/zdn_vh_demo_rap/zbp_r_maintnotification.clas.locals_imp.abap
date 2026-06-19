@@ -15,6 +15,9 @@ class lhc_maintitem definition inheriting from cl_abap_behavior_handler.
     methods setItemInitialStatus for determine on modify
       importing keys for MaintItem~setItemInitialStatus.
 
+    methods validateItemFields for validate on save
+  importing keys for MaintItem~validateItemFields.
+
 endclass.
 
 class lhc_maintitem implementation.
@@ -88,8 +91,27 @@ class lhc_maintitem implementation.
 
   endmethod.
 
-  method get_instance_features.
-  endmethod.
+method get_instance_features.
+
+  read entities of zr_maintnotificationtp in local mode
+    entity MaintItem
+    fields ( ItemStatus )
+    with corresponding #( keys )
+    result data(items)
+    failed failed.
+
+  result = value #( for item in items
+                    ( %tky                           = item-%tky
+                      %features-%action-markItemCompleted = cond #(
+                        when item-ItemStatus = 'CO' or item-ItemStatus = 'CA'
+                        then if_abap_behv=>fc-o-disabled
+                        else if_abap_behv=>fc-o-enabled )
+                      %features-%action-markItemCancelled = cond #(
+                        when item-ItemStatus = 'CA' or item-ItemStatus = 'CO'
+                        then if_abap_behv=>fc-o-disabled
+                        else if_abap_behv=>fc-o-enabled ) ) ).
+
+endmethod.
 
   method markItemCancelled.
 
@@ -189,7 +211,7 @@ class lhc_maintitem implementation.
 
   endmethod.
 
-  method setItemInitialStatus.
+ method setItemInitialStatus.
 
     read entities of zr_maintnotificationtp in local mode
       entity MaintItem
@@ -213,6 +235,64 @@ class lhc_maintitem implementation.
     endif.
 
   endmethod.
+
+method validateItemFields.
+
+  read entities of zr_maintnotificationtp in local mode
+    entity MaintItem
+    fields ( ActivityCode SparePartId RequiredQty QtyUom )
+    with corresponding #( keys )
+    result data(items).
+
+  loop at items into data(item).
+
+    append value #( %tky        = item-%tky
+                    %is_draft   = if_abap_behv=>mk-on
+                    %state_area = 'VALIDATE_ITEM_FIELDS' ) to reported-maintitem.
+
+    if item-ActivityCode is initial.
+      append value #( %tky                  = item-%tky
+                      %is_draft             = if_abap_behv=>mk-on
+                      %state_area           = 'VALIDATE_ITEM_FIELDS'
+                      %element-ActivityCode = if_abap_behv=>mk-on
+                      %msg                  = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Activity Code is required' ) ) to reported-maintitem.
+    endif.
+
+    if item-SparePartId is initial.
+      append value #( %tky                 = item-%tky
+                      %is_draft            = if_abap_behv=>mk-on
+                      %state_area          = 'VALIDATE_ITEM_FIELDS'
+                      %element-SparePartId = if_abap_behv=>mk-on
+                      %msg                 = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Spare Part is required' ) ) to reported-maintitem.
+    endif.
+
+    if item-RequiredQty <= 0.
+      append value #( %tky                 = item-%tky
+                      %is_draft            = if_abap_behv=>mk-on
+                      %state_area          = 'VALIDATE_ITEM_FIELDS'
+                      %element-RequiredQty = if_abap_behv=>mk-on
+                      %msg                 = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Required Quantity must be greater than 0' ) ) to reported-maintitem.
+    endif.
+
+    if item-QtyUom is initial.
+      append value #( %tky            = item-%tky
+                      %is_draft       = if_abap_behv=>mk-on
+                      %state_area     = 'VALIDATE_ITEM_FIELDS'
+                      %element-QtyUom = if_abap_behv=>mk-on
+                      %msg            = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Unit of Measure is required' ) ) to reported-maintitem.
+    endif.
+
+  endloop.
+
+endmethod.
 
 endclass.
 *=================================================
@@ -276,6 +356,13 @@ class lhc_zr_maintnotificationtp definition inheriting from cl_abap_behavior_han
       importing keys for MaintNotification~setPriorityFromUrgentKeyword.
     methods createFromTemplate for modify
       importing keys for action MaintNotification~createFromTemplate.
+    methods validateItemFields for validate on save
+      importing keys for MaintNotification~validateItemFields.
+    methods validateDescription for validate on save
+      importing keys for MaintNotification~validateDescription.
+
+    methods validatePriority for validate on save
+      importing keys for MaintNotification~validatePriority.
 
 endclass.
 
@@ -343,8 +430,55 @@ class lhc_zr_maintnotificationtp implementation.
       endif.
     endloop.
   endmethod.
-  method get_instance_features.
-  endmethod.
+method get_instance_features.
+
+  read entities of zr_maintnotificationtp in local mode
+    entity MaintNotification
+    fields ( Status )
+    with corresponding #( keys )
+    result data(notifs)
+    failed failed.
+
+  result = value #( for notif in notifs
+                    ( %tky = notif-%tky
+
+                      " startWork — solo si está Open (101)
+                      %features-%action-startWork =
+                        cond #( when notif-Status = '101'
+                                then if_abap_behv=>fc-o-enabled
+                                else if_abap_behv=>fc-o-disabled )
+
+                      " complete — solo si está In Process (102)
+                      %features-%action-complete =
+                        cond #( when notif-Status = '102'
+                                then if_abap_behv=>fc-o-enabled
+                                else if_abap_behv=>fc-o-disabled )
+
+                      " cancelNotification — solo si no está Completed (103) ni Cancelled (109)
+                      %features-%action-cancelNotification =
+                        cond #( when notif-Status = '103' or notif-Status = '109'
+                                then if_abap_behv=>fc-o-disabled
+                                else if_abap_behv=>fc-o-enabled )
+
+                      " reOpen — solo si está Completed (103) o Cancelled (109)
+                      %features-%action-reOpen =
+                        cond #( when notif-Status = '103' or notif-Status = '109'
+                                then if_abap_behv=>fc-o-enabled
+                                else if_abap_behv=>fc-o-disabled )
+
+                      " changePriority — solo si no está Completed ni Cancelled
+                      %features-%action-changePriority =
+                        cond #( when notif-Status = '103' or notif-Status = '109'
+                                then if_abap_behv=>fc-o-disabled
+                                else if_abap_behv=>fc-o-enabled )
+
+                      " reassignTechnician — solo si no está Completed ni Cancelled
+                      %features-%action-reassignTechnician =
+                        cond #( when notif-Status = '103' or notif-Status = '109'
+                                then if_abap_behv=>fc-o-disabled
+                                else if_abap_behv=>fc-o-enabled ) ) ).
+
+endmethod.
 
   method changePriority.
 
@@ -422,108 +556,117 @@ class lhc_zr_maintnotificationtp implementation.
 
   method reassignTechnician.
 
-    data: notifs_for_update type table for update zr_maintnotificationtp\\MaintNotification.
+  data: notifs_for_update type table for update zr_maintnotificationtp\\MaintNotification.
 
-    "Validación: el nuevo técnico no puede venir vacío
-    data(keys_valid_tech) = keys.
+  " Validación: el nuevo técnico no puede venir vacío
+  data(keys_valid_tech) = keys.
 
-    loop at keys_valid_tech assigning field-symbol(<fs_key_valid_tech>)
-       where %param-new_technician is initial.
+  loop at keys_valid_tech assigning field-symbol(<fs_key_valid_tech>)
+     where %param-new_technician is initial.
 
-      append value #( %tky = <fs_key_valid_tech>-%tky ) to failed-maintnotification.
+    append value #( %tky = <fs_key_valid_tech>-%tky ) to failed-maintnotification.
 
-      append value #( %tky = <fs_key_valid_tech>-%tky
+    append value #( %tky = <fs_key_valid_tech>-%tky
+                    %msg = new_message_with_text(
+                    severity = if_abap_behv_message=>severity-error
+                    text     = 'Please select a Technician' )
+                  ) to reported-maintnotification.
+
+    data(lv_error) = abap_true.
+
+  endloop.
+
+  check lv_error ne abap_true.
+
+  " Leer Status y Description actuales
+  read entities of zr_maintnotificationtp in local mode
+    entity MaintNotification
+    fields ( Status Description )
+    with corresponding #( keys )
+    result data(notifs).
+
+  " Validar que el técnico nuevo exista en la tabla maestra
+  select from zmaint_techns as ddbb
+           fields ddbb~technician_id, ddbb~is_available
+           into table @data(all_technicians).
+
+  loop at notifs assigning field-symbol(<fs_notif>).
+
+    data(new_tech) = keys[ key id %tky = <fs_notif>-%tky ]-%param-new_technician.
+    data(reason)   = keys[ key id %tky = <fs_notif>-%tky ]-%param-reason.
+
+    if <fs_notif>-Status = '109' or <fs_notif>-Status = '103'.
+
+      append value #( %tky = <fs_notif>-%tky ) to failed-maintnotification.
+      append value #( %tky = <fs_notif>-%tky
                       %msg = new_message_with_text(
                       severity = if_abap_behv_message=>severity-error
-                      text     = 'Please select a Technician' )
+                      text     = 'Cannot reassign Technician on Completed/Cancelled notifications' )
                     ) to reported-maintnotification.
 
-      data(lv_error) = abap_true.
-
-    endloop.
-
-    check lv_error ne abap_true.
-
-    "Leer Status actual de las notificaciones seleccionadas
-    read entities of zr_maintnotificationtp in local mode
-      entity MaintNotification
-      fields ( Status )
-      with corresponding #( keys )
-      result data(notifs).
-
-    "Validar que el técnico nuevo exista en la tabla maestra
-    data technicians type sorted table of zmaint_techns with unique key client technician_id.
-
-    select from zmaint_techns as ddbb
-             fields ddbb~technician_id, ddbb~is_available
-             into table @data(all_technicians).
-
-    loop at notifs assigning field-symbol(<fs_notif>).
-
-      data(new_tech) = keys[ key id %tky = <fs_notif>-%tky ]-%param-new_technician.
-
-      if <fs_notif>-Status = '109' or <fs_notif>-Status = '103'.
-
-        append value #( %tky = <fs_notif>-%tky ) to failed-maintnotification.
-        append value #( %tky = <fs_notif>-%tky
-                        %msg = new_message_with_text(
-                        severity = if_abap_behv_message=>severity-error
-                        text     = 'Cannot reassign Technician on Completed/Cancelled notifications' )
-                      ) to reported-maintnotification.
-
-        continue.
-
-      endif.
-
-      read table all_technicians into data(tech_master) with key technician_id = new_tech.
-
-      if sy-subrc <> 0.
-
-        append value #( %tky = <fs_notif>-%tky ) to failed-maintnotification.
-        append value #( %tky = <fs_notif>-%tky
-                        %msg = new_message_with_text(
-                        severity = if_abap_behv_message=>severity-error
-                        text     = |Technician { new_tech } is not valid| )
-                      ) to reported-maintnotification.
-
-        continue.
-
-      endif.
-
-      if tech_master-is_available <> 'Available'.
-
-        "Warning, no bloquea
-        append value #( %tky = <fs_notif>-%tky
-                        %msg = new_message_with_text(
-                        severity = if_abap_behv_message=>severity-warning
-                        text     = |Technician { new_tech } is currently { tech_master-is_available }| )
-                      ) to reported-maintnotification.
-
-      endif.
-
-      append value #( %tky         = <fs_notif>-%tky
-                      TechnicianID = new_tech ) to notifs_for_update.
-
-    endloop.
-
-    if notifs_for_update is not initial.
-
-      modify entities of zr_maintnotificationtp in local mode
-        entity MaintNotification
-          update fields ( TechnicianID )
-          with notifs_for_update.
+      continue.
 
     endif.
 
-    read entities of zr_maintnotificationtp in local mode
+    read table all_technicians into data(tech_master) with key technician_id = new_tech.
+
+    if sy-subrc <> 0.
+
+      append value #( %tky = <fs_notif>-%tky ) to failed-maintnotification.
+      append value #( %tky = <fs_notif>-%tky
+                      %msg = new_message_with_text(
+                      severity = if_abap_behv_message=>severity-error
+                      text     = |Technician { new_tech } is not valid| )
+                    ) to reported-maintnotification.
+
+      continue.
+
+    endif.
+
+    if tech_master-is_available <> 'Available'.
+
+      " Warning — no bloquea
+      append value #( %tky = <fs_notif>-%tky
+                      %msg = new_message_with_text(
+                      severity = if_abap_behv_message=>severity-warning
+                      text     = |Technician { new_tech } is currently { tech_master-is_available }| )
+                    ) to reported-maintnotification.
+
+    endif.
+
+    " Concatenar reason al Description si viene con valor
+    data(new_desc) = <fs_notif>-Description.
+    if reason is not initial.
+      new_desc = |{ <fs_notif>-Description }| &&
+                 | [Reassigned to { new_tech }: { reason }]|.
+    endif.
+
+    append value #(
+      %tky         = <fs_notif>-%tky
+      TechnicianID = new_tech
+      Description  = new_desc
+    ) to notifs_for_update.
+
+  endloop.
+
+  if notifs_for_update is not initial.
+
+    modify entities of zr_maintnotificationtp in local mode
       entity MaintNotification
-      all fields with corresponding #( keys )
-      result data(result_notifs).
+        update fields ( TechnicianID Description )
+        with notifs_for_update.
 
-    result = value #( for r in result_notifs ( %tky   = r-%tky
-                                               %param = r ) ).
+  endif.
 
-  endmethod.
+  read entities of zr_maintnotificationtp in local mode
+    entity MaintNotification
+    all fields with corresponding #( keys )
+    result data(result_notifs).
+
+  result = value #( for r in result_notifs ( %tky   = r-%tky
+                                             %param = r ) ).
+
+endmethod.
 
   method cancelNotification.
 
@@ -1049,6 +1192,161 @@ class lhc_zr_maintnotificationtp implementation.
 
   endmethod.
 
+
+method validateItemFields.
+
+  " Leer los items hijos de cada notificación
+  read entities of zr_maintnotificationtp in local mode
+    entity MaintNotification
+    by \_MaintItem
+    fields ( ActivityCode SparePartId RequiredQty QtyUom )
+    with corresponding #( keys )
+    result data(items)
+    link data(links).
+
+  types: begin of ty_actcode,
+           activity_code type zmaint_actcode-activity_code,
+         end of ty_actcode.
+  data act_codes type sorted table of ty_actcode with unique key activity_code.
+  act_codes = corresponding #( items discarding duplicates mapping activity_code = ActivityCode except * ).
+  delete act_codes where activity_code is initial.
+  if act_codes is not initial.
+    select from zmaint_actcode as db
+             inner join @act_codes as req on db~activity_code = req~activity_code
+             fields db~activity_code
+             into table @data(valid_act_codes).
+  endif.
+
+  types: begin of ty_sparepart,
+           spare_part_id type zmaint_sparepart-spare_part_id,
+         end of ty_sparepart.
+  data spare_parts type sorted table of ty_sparepart with unique key spare_part_id.
+  spare_parts = corresponding #( items discarding duplicates mapping spare_part_id = SparePartId except * ).
+  delete spare_parts where spare_part_id is initial.
+  if spare_parts is not initial.
+    select from zmaint_sparepart as db
+             inner join @spare_parts as req on db~spare_part_id = req~spare_part_id
+             fields db~spare_part_id
+             into table @data(valid_spare_parts).
+  endif.
+
+  loop at items into data(item).
+
+    append value #( %tky        = item-%tky
+                    %state_area = 'VALIDATE_ITEM_FIELDS' ) to reported-maintnotification.
+
+    " ActivityCode
+    if item-ActivityCode is initial.
+      append value #( %tky = item-%tky ) to failed-maintnotification.
+      append value #( %tky        = item-%tky
+                      %state_area = 'VALIDATE_ITEM_FIELDS'
+                      %msg        = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Activity Code is required' ) ) to reported-maintnotification.
+
+    elseif not line_exists( valid_act_codes[ activity_code = item-ActivityCode ] ).
+      append value #( %tky = item-%tky ) to failed-maintnotification.
+      append value #( %tky        = item-%tky
+                      %state_area = 'VALIDATE_ITEM_FIELDS'
+                      %msg        = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = |Activity Code { item-ActivityCode } is not valid| ) ) to reported-maintnotification.
+    endif.
+
+    " SparePartId
+    if item-SparePartId is initial.
+      append value #( %tky = item-%tky ) to failed-maintnotification.
+      append value #( %tky        = item-%tky
+                      %state_area = 'VALIDATE_ITEM_FIELDS'
+                      %msg        = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Spare Part is required' ) ) to reported-maintnotification.
+
+    elseif not line_exists( valid_spare_parts[ spare_part_id = item-SparePartId ] ).
+      append value #( %tky = item-%tky ) to failed-maintnotification.
+      append value #( %tky        = item-%tky
+                      %state_area = 'VALIDATE_ITEM_FIELDS'
+                      %msg        = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = |Spare Part { item-SparePartId } is not valid| ) ) to reported-maintnotification.
+    endif.
+
+    " RequiredQty
+    if item-RequiredQty <= 0.
+      append value #( %tky = item-%tky ) to failed-maintnotification.
+      append value #( %tky        = item-%tky
+                      %state_area = 'VALIDATE_ITEM_FIELDS'
+                      %msg        = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Required Quantity must be greater than 0' ) ) to reported-maintnotification.
+    endif.
+
+    " QtyUom
+    if item-QtyUom is initial.
+      append value #( %tky = item-%tky ) to failed-maintnotification.
+      append value #( %tky        = item-%tky
+                      %state_area = 'VALIDATE_ITEM_FIELDS'
+                      %msg        = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Unit of Measure is required' ) ) to reported-maintnotification.
+    endif.
+
+  endloop.
+
+endmethod.
+method validateDescription.
+
+  read entities of zr_maintnotificationtp in local mode
+    entity MaintNotification
+    fields ( Description )
+    with corresponding #( keys )
+    result data(notifs).
+
+  loop at notifs into data(notif).
+
+    append value #( %tky        = notif-%tky
+                    %state_area = 'VALIDATE_DESCRIPTION' ) to reported-maintnotification.
+
+    if notif-Description is initial.
+      append value #( %tky = notif-%tky ) to failed-maintnotification.
+      append value #( %tky                   = notif-%tky
+                      %state_area            = 'VALIDATE_DESCRIPTION'
+                      %msg                   = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Please enter a Description' )
+                      %element-Description   = if_abap_behv=>mk-on ) to reported-maintnotification.
+    endif.
+
+  endloop.
+
+endmethod.
+
+method validatePriority.
+
+  read entities of zr_maintnotificationtp in local mode
+    entity MaintNotification
+    fields ( Priority )
+    with corresponding #( keys )
+    result data(notifs).
+
+  loop at notifs into data(notif).
+
+    append value #( %tky        = notif-%tky
+                    %state_area = 'VALIDATE_PRIORITY' ) to reported-maintnotification.
+
+    if notif-Priority is initial.
+      append value #( %tky = notif-%tky ) to failed-maintnotification.
+      append value #( %tky              = notif-%tky
+                      %state_area       = 'VALIDATE_PRIORITY'
+                      %msg              = new_message_with_text(
+                        severity = if_abap_behv_message=>severity-error
+                        text     = 'Please select a Priority, or include ''URGENT'' in the description to auto-assign Very High' )
+                      %element-Priority = if_abap_behv=>mk-on ) to reported-maintnotification.
+    endif.
+
+  endloop.
+
+endmethod.
 
 endclass.
 

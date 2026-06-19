@@ -19,8 +19,8 @@ define view entity ZR_MaintItemTP
       spare_part_id         as SparePartId,
 
 
-      @Semantics.valueRange.minimum: '0'
-      @Semantics.valueRange.maximum: '10000'
+//      @Semantics.valueRange.minimum: '0'
+//      @Semantics.valueRange.maximum: '10000'
       @Semantics.quantity.unitOfMeasure: 'QtyUom'
       required_qty          as RequiredQty,
 

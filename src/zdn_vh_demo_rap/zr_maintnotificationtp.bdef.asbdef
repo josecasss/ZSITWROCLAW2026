@@ -27,21 +27,17 @@ authorization master ( global )
   LastChangedAt,
   LocalLastChangedAt;
 
-
   field ( mandatory ) PlantID,
   EquipmentID,
   DamageCodeID,
   TechnicianID,
-  FuncLocId,
-  Priority,
-  Description;
+  FuncLocId;
 
   // Maint Notification - Object Page Header actions
   action ( features : instance, authorization : update ) startWork result [1] $self;
   action ( features : instance, authorization : update ) complete result [1] $self;
   action ( features : instance, authorization : update ) cancelNotification result [1] $self;
   action ( features : instance, authorization : update ) reOpen result [1] $self;
-
 
   // List Report actions
   action ( features : instance, authorization : update ) reassignTechnician
@@ -53,12 +49,15 @@ authorization master ( global )
   // List Report - Factory action (create from template)
   factory action createFromTemplate parameter Z_AE_MAINT_CREATE_TEMPLATE [1];
 
-  //Validations al crear y guardar
+  // Validations al crear y guardar
   validation validatePlant on save { field PlantId; }
   validation validateEquipment on save { field EquipmentID; }
   validation validateDamageCode on save { field DamageCodeID; }
   validation validateTechnician on save { field TechnicianID; }
   validation validateFuncLoc on save { field FuncLocId; }
+  validation validateItemFields on save { create; update; }
+  validation validateDescription on save { field Description; }
+  validation validatePriority on save { field Priority; }
 
   draft action Activate optimized;
   draft action Discard;
@@ -72,13 +71,17 @@ authorization master ( global )
     validation validateDamageCode;
     validation validateTechnician;
     validation validateFuncLoc;
+    validation validateDescription;
+    validation validatePriority;
+    validation validateItemFields;
+    validation MaintItem~validateItemFields;
   }
 
   determination setInitialStatus on modify { create; }
   determination setSlaFromPriority on modify { field Priority; }
   determination setPriorityFromUrgentKeyword on modify { create; field Description; }
 
-  // Determine actions: wrappers que conectan cada validation con los side effects
+  // Determine actions: wrappers para side effects
   determine action validatePlantAction { validation validatePlant; }
   determine action validateEquipmentAction { validation validateEquipment; }
   determine action validateDamageCodeAction { validation validateDamageCode; }
@@ -135,13 +138,12 @@ etag master LocalLastChangedAt
   update;
   delete;
 
-  field ( mandatory ) ActivityCode,
-  SparePartId,
-  REquiredQty,
-  ItemStatus;
+  field ( mandatory ) ItemStatus;
 
   determination setItemNo on modify { create; }
   determination setItemInitialStatus on modify { create; }
+
+  validation validateItemFields on save { create; update; }
 
   action ( features : instance, authorization : update ) markItemCompleted result [1] $self;
   action ( features : instance, authorization : update ) markItemCancelled result [1] $self;
