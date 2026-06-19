@@ -26,11 +26,18 @@ use etag
   use action cancelNotification;
   use action reOpen;
 
+  side effects
+  {
+    field TechnicianID affects field TechFirstName,
+                             field TechLastName,
+                             field TechEmail,
+                             field TechPhone,
+                             field TechAvailability;
+  }
 }
 
 define behavior for ZC_MaintItemTP alias MaintItem
 {
-
   use update;
   use delete;
   use association _Notification { with draft; }

@@ -7,8 +7,8 @@
 define view entity ZR_MaintItemTP
   as select from zmaint_itema as MaintItem
 
-  association to parent ZR_MaintNotificationTP as _Notification on $projection.NotifUUID = _Notification.NotifUUID
-  association [0..1] to ZI_DN_STATUS_ITEM_VH   as _ItemStatusVH  on $projection.ItemStatus = _ItemStatusVH.ItemStatus
+  association        to parent ZR_MaintNotificationTP as _Notification on $projection.NotifUUID = _Notification.NotifUUID
+  association [0..1] to ZI_DN_STATUS_ITEM_VH          as _ItemStatusVH on $projection.ItemStatus = _ItemStatusVH.ItemStatus
 
 {
   key notif_uuid            as NotifUUID,
@@ -18,9 +18,12 @@ define view entity ZR_MaintItemTP
       activity_code         as ActivityCode,
       spare_part_id         as SparePartId,
 
+
+      @Semantics.valueRange.minimum: '0'
+      @Semantics.valueRange.maximum: '10000'
       @Semantics.quantity.unitOfMeasure: 'QtyUom'
       required_qty          as RequiredQty,
-      
+
       qty_uom               as QtyUom,
 
       item_status           as ItemStatus,

@@ -90,12 +90,6 @@ authorization master ( global )
     field PlantId affects field EquipmentId;
     field Priority affects field SlaHours;
 
-    field TechnicianID affects field _Technician.FirstName,
-                            field _Technician.LastName,
-                            field _Technician.Email,
-                            field _Technician.Phone,
-                            field _Technician.Availability;
-
     determine action validatePlantAction executed on field PlantId affects messages;
     determine action validateEquipmentAction executed on field EquipmentID affects messages;
     determine action validateDamageCodeAction executed on field DamageCodeID affects messages;
@@ -140,6 +134,11 @@ etag master LocalLastChangedAt
 
   update;
   delete;
+
+  field ( mandatory ) ActivityCode,
+  SparePartId,
+  REquiredQty,
+  ItemStatus;
 
   determination setItemNo on modify { create; }
   determination setItemInitialStatus on modify { create; }

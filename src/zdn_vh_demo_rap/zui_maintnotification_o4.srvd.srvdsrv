@@ -11,4 +11,6 @@ define service ZUI_MaintNotification_O4
   expose ZC_MaintNotificationTP as MaintNotification;
   expose ZC_MaintItemTP         as MaintItem;
   expose ZC_FuncLocVH           as FuncLocVH;
+  expose ZI_ActivityCodeVH      as ActivityCodeVH;
+  expose ZI_SparePartVH         as SparePartVH;
 }
