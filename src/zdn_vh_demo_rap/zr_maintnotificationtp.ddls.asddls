@@ -26,7 +26,7 @@ define root view entity ZR_MaintNotificationTP
       funcloc_id            as FuncLocId,
       priority              as Priority,
       status                as Status,
-
+      
       case status
         when '101' then 1
         when '102' then 2
