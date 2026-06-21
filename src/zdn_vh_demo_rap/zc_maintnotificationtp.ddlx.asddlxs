@@ -75,12 +75,13 @@ annotate view ZC_MaintNotificationTP with
   @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DamageCodeVH', element: 'DamageCode' } } ]
   DamageCodeID;
 
-  @EndUserText.label: 'Technician'
-  @UI.identification: [ { position: 40 } ]
-  @UI.lineItem: [ { position: 40 } ]
-  @UI.selectionField: [ { position: 11 } ]
-  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_TECHNICIANSVH', element: 'TechnicianId' } } ]
-  TechnicianID;
+    @EndUserText.label: 'Technician'
+    @UI.lineItem:       [ { position: 40, type: #AS_CONTACT, label: 'Technician', importance: #HIGH } ]
+    @UI.identification: [ { position: 40, type: #AS_CONTACT, label: 'Technician' } ]
+    @UI.selectionField: [ { position: 11 } ]
+    @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_TECHNICIANSVH', element: 'TechnicianId'
+  } } ]
+    TechnicianID;
 
   @Consumption.valueHelpDefinition: [ { entity: { name: 'ZC_FuncLocVH', element: 'FuncLocId' },
                                         presentationVariantQualifier: 'HIERARCHY',

@@ -1,11 +1,11 @@
 @EndUserText: {
-  label: 'Service Definition for ZC_MaintNotificationTP'
-}
-@ObjectModel: {
-  leadingEntity: {
-    name: 'ZC_MaintNotificationTP'
+    label: 'Service Definition for ZC_MaintNotificationTP'
   }
-}
+@ObjectModel: {
+    leadingEntity: {
+      name: 'ZC_MaintNotificationTP'
+    }
+  }
 define service ZUI_MaintNotification_O4
   provider contracts odata_v4_ui {
   expose ZC_MaintNotificationTP as MaintNotification;
@@ -13,4 +13,5 @@ define service ZUI_MaintNotification_O4
   expose ZC_FuncLocVH           as FuncLocVH;
   expose ZI_ActivityCodeVH      as ActivityCodeVH;
   expose ZI_SparePartVH         as SparePartVH;
+  expose ZI_DN_TECHNICIANSVH    as TechnicianVH;
 }

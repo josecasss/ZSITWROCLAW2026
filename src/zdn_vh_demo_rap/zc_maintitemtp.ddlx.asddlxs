@@ -41,11 +41,11 @@ SparePartId;
   @UI.lineItem: [ { position: 40 } ]
   RequiredQty;
 
-  @EndUserText.label: 'Unit'
-  @UI.identification: [ { position: 50 } ]
-  @UI.lineItem: [ { position: 50 } ]
-  @Consumption.valueHelpDefinition: [ { entity: { name: 'I_UnitOfMeasureStdVH', element: 'UnitOfMeasure' } } ]
-  QtyUom;
+//  @EndUserText.label: 'Unit'
+//  @UI.identification: [ { position: 50 } ]
+//  @UI.lineItem: [ { position: 50 } ]
+//  @Consumption.valueHelpDefinition: [ { entity: { name: 'I_UnitOfMeasureStdVH', element: 'UnitOfMeasure' } } ]
+//  QtyUom;
 
   @UI.identification: [ { position: 60 } ]
   @UI.lineItem: [ { position: 60 } ]

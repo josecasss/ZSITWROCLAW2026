@@ -16,13 +16,13 @@ define root view entity ZC_MaintNotificationTP
 
       @ObjectModel.text.element: [ 'PlantName' ]
       PlantID,
-      _Plant.PlantName as PlantName,
+      _Plant.PlantName         as PlantName,
 
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
       @ObjectModel.text.element: [ 'EquipmentText' ]
       EquipmentID,
-      _Equipment.EquipText as EquipmentText,
+      _Equipment.EquipText     as EquipmentText,
 
       DamageCodeID,
       TechnicianID,
@@ -30,27 +30,27 @@ define root view entity ZC_MaintNotificationTP
 
       @ObjectModel.text.element: [ 'PriorityText' ]
       Priority,
-      _Priority.PriorityText as PriorityText,
+      _Priority.PriorityText   as PriorityText,
 
       @ObjectModel.text.element: [ 'StatusText' ]
       Status,
-      _Status.StatusText     as StatusText,
+      _Status.StatusText       as StatusText,
 
       StatusCriticality,
 
       Description,
       SlaHours,
+              
+        @Semantics.name.givenName: true          
+        _Technician.FirstName     as TechFirstName,
 
-      _Technician.FirstName     as TechFirstName,
-      _Technician.LastName      as TechLastName,
-
-      @Semantics.eMail.address: true
-      _Technician.Email         as TechEmail,
-
-      @Semantics.telephone.type: [#CELL]
-      _Technician.Phone         as TechPhone,
-
-      _Technician.Availability  as TechAvailability,
+        @Semantics.name.familyName: true         
+        _Technician.LastName      as TechLastName,
+        @Semantics.eMail.address: true 
+        _Technician.Email         as TechEmail,    
+        @Semantics.telephone.type: [#CELL]  
+        _Technician.Phone         as TechPhone,    
+        _Technician.Availability  as TechAvailability,
 
       @Semantics.user.createdBy: true
       CreatedBy,
