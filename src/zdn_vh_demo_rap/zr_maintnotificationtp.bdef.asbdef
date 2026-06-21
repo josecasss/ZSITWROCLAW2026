@@ -1,108 +1,93 @@
 managed implementation in class ZBP_R_MaintNotification unique;
-strict ( 2 );
-with draft;
-extensible;
-define behavior for ZR_MaintNotificationTP alias MaintNotification
-extensible
-persistent table zmaint_notifa
-draft table zmaint_notifd
-etag master LocalLastChangedAt
-lock master total etag LastChangedAt
-authorization master ( global )
-{
+  strict ( 2 );
+  with draft;
+  extensible;
 
-  create;
-  update;
-  delete;
-
-  field ( numbering : managed )
-  NotifUUID;
-
-  field ( readonly )
-  Status,
-  NotifUUID,
-  CreatedBy,
-  CreatedAt,
-  LastChangedBy,
-  LastChangedAt,
-  LocalLastChangedAt;
-
-  field ( mandatory ) PlantID,
-  EquipmentID,
-  DamageCodeID,
-  TechnicianID,
-  FuncLocId;
-
-  // Maint Notification - Object Page Header actions
-  action ( features : instance, authorization : update ) startWork result [1] $self;
-  action ( features : instance, authorization : update ) complete result [1] $self;
-  action ( features : instance, authorization : update ) cancelNotification result [1] $self;
-  action ( features : instance, authorization : update ) reOpen result [1] $self;
-
-  // List Report actions
-  action ( features : instance, authorization : update ) reassignTechnician
-    parameter Z_AE_MAINT_CHANGE_TECH result [1] $self;
-
-  action ( features : instance, authorization : update ) changePriority
-    parameter Z_AE_MAINT_CHANGE_STATUS result [1] $self;
-
-  // List Report - Factory action (create from template)
-  factory action createFromTemplate parameter Z_AE_MAINT_CREATE_TEMPLATE [1];
-
-  // Validations al crear y guardar
-  validation validatePlant on save { field PlantId; }
-  validation validateEquipment on save { field EquipmentID; }
-  validation validateDamageCode on save { field DamageCodeID; }
-  validation validateTechnician on save { field TechnicianID; }
-  validation validateFuncLoc on save { field FuncLocId; }
-  validation validateItemFields on save { create; update; }
-  validation validateDescription on save { field Description; }
-  validation validatePriority on save { field Priority; }
-
-  draft action Activate optimized;
-  draft action Discard;
-  draft action Edit;
-  draft action Resume;
-
-  draft determine action Prepare
+  define behavior for ZR_MaintNotificationTP alias MaintNotification
+  extensible
+  persistent table zmaint_notifa
+  draft table zmaint_notifd
+  etag master LocalLastChangedAt
+  lock master total etag LastChangedAt
+  authorization master ( global )
   {
-    validation validatePlant;
-    validation validateEquipment;
-    validation validateDamageCode;
-    validation validateTechnician;
-    validation validateFuncLoc;
-    validation validateDescription;
-    validation validatePriority;
-    validation validateItemFields;
-    validation MaintItem~validateItemFields;
-  }
+    create;
+    update;
+    delete;
 
-  determination setInitialStatus on modify { create; }
-  determination setSlaFromPriority on modify { field Priority; }
-  determination setPriorityFromUrgentKeyword on modify { create; field Description; }
+    field ( numbering : managed ) NotifUUID;
 
-  // Determine actions: wrappers para side effects
-  determine action validatePlantAction { validation validatePlant; }
-  determine action validateEquipmentAction { validation validateEquipment; }
-  determine action validateDamageCodeAction { validation validateDamageCode; }
-  determine action validateTechnicianAction { validation validateTechnician; }
-  determine action validateFuncLocAction { validation validateFuncLoc; }
+    field ( readonly )
+    Status, NotifUUID, CreatedBy, CreatedAt,
+    LastChangedBy, LastChangedAt, LocalLastChangedAt;
 
-  side effects
-  {
-    field PlantId affects field EquipmentId;
-    field Priority affects field SlaHours;
+    field ( mandatory ) PlantID, EquipmentID, DamageCodeID, TechnicianID, FuncLocId;
 
-    determine action validatePlantAction executed on field PlantId affects messages;
-    determine action validateEquipmentAction executed on field EquipmentID affects messages;
-    determine action validateDamageCodeAction executed on field DamageCodeID affects messages;
-    determine action validateTechnicianAction executed on field TechnicianID affects messages;
-    determine action validateFuncLocAction executed on field FuncLocId affects messages;
-  }
+    action ( features : instance, authorization : update ) startWork          result [1] $self;
+    action ( features : instance, authorization : update ) complete            result [1] $self;
+    action ( features : instance, authorization : update ) cancelNotification result [1] $self;
+    action ( features : instance, authorization : update ) reOpen              result [1] $self;
 
-  association _MaintItem { create; with draft; }
+    action ( features : instance, authorization : update ) reassignTechnician
+      parameter Z_AE_MAINT_CHANGE_TECH result [1] $self;
 
-  mapping for zmaint_notifa corresponding extensible
+    action ( features : instance, authorization : update ) changePriority
+      parameter Z_AE_MAINT_CHANGE_STATUS result [1] $self;
+
+    factory action createFromTemplate parameter Z_AE_MAINT_CREATE_TEMPLATE [1];
+
+    validation validatePlant       on save { field PlantId; }
+    validation validateEquipment   on save { field EquipmentID; }
+    validation validateDamageCode  on save { field DamageCodeID; }
+    validation validateTechnician  on save { field TechnicianID; }
+    validation validateFuncLoc     on save { field FuncLocId; }
+    validation validateItemFields  on save { create; update; }
+    validation validateDescription on save { field Description; }
+    validation validatePriority    on save { field Priority; }
+
+    draft action Activate optimized;
+    draft action Discard;
+    draft action Edit;
+    draft action Resume;
+
+    draft determine action Prepare
+    {
+      validation validatePlant;
+      validation validateEquipment;
+      validation validateDamageCode;
+      validation validateTechnician;
+      validation validateFuncLoc;
+      validation validateDescription;
+      validation validatePriority;
+      validation validateItemFields;
+      validation MaintItem~validateItemFields;
+    }
+
+    determination setInitialStatus              on modify { create; }
+    determination setSlaFromPriority            on modify { field Priority; }
+    determination setPriorityFromUrgentKeyword  on modify { create; field Description; }
+
+    determine action validatePlantAction      { validation validatePlant; }
+    determine action validateEquipmentAction  { validation validateEquipment; }
+    determine action validateDamageCodeAction { validation validateDamageCode; }
+    determine action validateTechnicianAction { validation validateTechnician; }
+    determine action validateFuncLocAction    { validation validateFuncLoc; }
+
+    side effects
+    {
+      field PlantId     affects field EquipmentId;
+      field Priority    affects field SlaHours;
+      determine action validatePlantAction      executed on field PlantId       affects messages;
+      determine action validateEquipmentAction  executed on field EquipmentID   affects messages;
+      determine action validateDamageCodeAction executed on field DamageCodeID  affects messages;
+      determine action validateTechnicianAction executed on field TechnicianID  affects messages;
+      determine action validateFuncLocAction    executed on field FuncLocId     affects messages;
+    }
+
+    association _MaintItem  { create; with draft; }
+    association _Attachment { create; with draft; }
+
+    mapping for zmaint_notifa corresponding extensible
     {
       NotifUUID          = NOTIF_UUID;
       PlantID            = PLANT_ID;
@@ -120,37 +105,35 @@ authorization master ( global )
       LastChangedAt      = LAST_CHANGED_AT;
       LocalLastChangedAt = LOCAL_LAST_CHANGED_AT;
     }
+  }
 
-}
+  define behavior for ZR_MaintItemTP alias MaintItem
+  persistent table zmaint_itema
+  draft table zmaint_itemd
+  lock dependent by _Notification
+  authorization dependent by _Notification
+  etag master LocalLastChangedAt
+  {
+    field ( readonly, numbering : managed ) ItemUUID;
+    field ( readonly ) NotifUuid, ItemNo;
+    field ( readonly ) CreatedBy, CreatedAt, LastChangedBy, LastChangedAt, LocalLastChangedAt;
 
-define behavior for ZR_MaintItemTP alias MaintItem
-persistent table zmaint_itema
-draft table zmaint_itemd
-lock dependent by _Notification
-authorization dependent by _Notification
-etag master LocalLastChangedAt
-{
-  field ( readonly, numbering : managed ) ItemUUID;
-  field ( readonly ) NotifUuid, ItemNo;
-  field ( readonly ) CreatedBy, CreatedAt,
-  LastChangedBy, LastChangedAt, LocalLastChangedAt;
+    update;
+    delete;
 
-  update;
-  delete;
+    field ( mandatory ) ItemStatus;
 
-  field ( mandatory ) ItemStatus;
+    determination setItemNo          on modify { create; }
+    determination setItemInitialStatus on modify { create; }
 
-  determination setItemNo on modify { create; }
-  determination setItemInitialStatus on modify { create; }
+    validation validateItemFields on save { create; update; }
 
-  validation validateItemFields on save { create; update; }
+    action ( features : instance, authorization : update ) markItemCompleted result [1] $self;
+    action ( features : instance, authorization : update ) markItemCancelled result [1] $self;
 
-  action ( features : instance, authorization : update ) markItemCompleted result [1] $self;
-  action ( features : instance, authorization : update ) markItemCancelled result [1] $self;
+    association _Notification { with draft; }
 
-  association _Notification { with draft; }
-
-  mapping for zmaint_itema
+    mapping for zmaint_itema
     {
       NotifUuid          = notif_uuid;
       ItemUuid           = item_uuid;
@@ -166,4 +149,37 @@ etag master LocalLastChangedAt
       LastChangedAt      = last_changed_at;
       LocalLastChangedAt = local_last_changed_at;
     }
-}
+  }
+
+  define behavior for ZI_MaintAttachmentTP alias MaintAttachment
+  persistent table zmaint_attachm
+  draft table zmaint_attachmd
+  lock dependent by _Notification
+  authorization dependent by _Notification
+  etag master LocalLastChangedAt
+  {
+    field ( readonly, numbering : managed ) AttachUUID;
+    field ( readonly ) NotifUUID,
+                       CreatedBy, CreatedAt,
+                       LastChangedBy, LastChangedAt, LocalLastChangedAt;
+
+    update;
+    delete;
+
+    association _Notification { with draft; }
+
+    mapping for zmaint_attachm
+    {
+      AttachUUID         = attach_uuid;
+      NotifUUID          = notif_uuid;
+      FileContent        = file_content;
+      MimeType           = mime_type;
+      FileName           = file_name;
+      FileSize           = file_size;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+  }

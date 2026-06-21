@@ -1,20 +1,18 @@
 @AccessControl.authorizationCheck: #NOT_ALLOWED
-
 @EndUserText.label: ' Core Data Service Entity'
-
 @Metadata.allowExtensions: true
-
 @ObjectModel.sapObjectNodeType.name: 'ZMAINT_NOTIFA'
 
 define root view entity ZR_MaintNotificationTP
   as select from zmaint_notifa as MaintNotification
 
-  composition [0..*] of ZR_MaintItemTP    as _MaintItem
-  association [0..1] to ZI_DN_Priority_VH as _Priority  on $projection.Priority = _Priority.PriorityCode
-  association [0..1] to ZI_DN_Status_VH   as _Status    on $projection.Status = _Status.StatusCode
-  association [0..1] to ZI_DN_TECHNICIANSVH as _Technician on $projection.TechnicianID = _Technician.TechnicianId
-  association [0..1] to ZI_PlantVH        as _Plant     on $projection.PlantID = _Plant.PlantID
-  association [0..1] to ZI_EquipmentVH    as _Equipment on $projection.EquipmentID = _Equipment.EquipmentId
+  composition [0..*] of ZR_MaintItemTP       as _MaintItem
+  composition [0..*] of ZI_MaintAttachmentTP as _Attachment
+  association [0..1] to ZI_DN_Priority_VH    as _Priority   on $projection.Priority = _Priority.PriorityCode
+  association [0..1] to ZI_DN_Status_VH      as _Status     on $projection.Status = _Status.StatusCode
+  association [0..1] to ZI_DN_TECHNICIANSVH  as _Technician on $projection.TechnicianID = _Technician.TechnicianId
+  association [0..1] to ZI_PlantVH           as _Plant      on $projection.PlantID = _Plant.PlantID
+  association [0..1] to ZI_EquipmentVH       as _Equipment  on $projection.EquipmentID = _Equipment.EquipmentId
 
 {
   key notif_uuid            as NotifUUID,
@@ -26,11 +24,12 @@ define root view entity ZR_MaintNotificationTP
       funcloc_id            as FuncLocId,
       priority              as Priority,
       status                as Status,
-      
+
       case status
-        when '101' then 1
+        when '101' then 5
         when '102' then 2
         when '103' then 3
+        when '109' then 1
         else 0
       end                   as StatusCriticality,
 
@@ -39,20 +38,17 @@ define root view entity ZR_MaintNotificationTP
 
       @Semantics.user.createdBy: true
       created_by            as CreatedBy,
-
       @Semantics.systemDateTime.createdAt: true
       created_at            as CreatedAt,
-
       @Semantics.user.localInstanceLastChangedBy: true
       last_changed_by       as LastChangedBy,
-
       @Semantics.systemDateTime.lastChangedAt: true
       last_changed_at       as LastChangedAt,
-
       @Semantics.systemDateTime.localInstanceLastChangedAt: true
       local_last_changed_at as LocalLastChangedAt,
 
       _MaintItem,
+      _Attachment,
       _Priority,
       _Status,
       _Technician,

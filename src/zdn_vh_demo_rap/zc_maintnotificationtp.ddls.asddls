@@ -37,7 +37,9 @@ define root view entity ZC_MaintNotificationTP
       _Status.StatusText       as StatusText,
 
       StatusCriticality,
-
+      
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.8
       Description,
       SlaHours,
               
@@ -68,6 +70,7 @@ define root view entity ZC_MaintNotificationTP
       LocalLastChangedAt,
 
       _MaintItem : redirected to composition child ZC_MaintItemTP,
+      _Attachment: redirected to composition child ZC_MaintAttachmentTP,
 
       _Status,
       _Priority,

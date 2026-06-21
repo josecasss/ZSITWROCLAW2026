@@ -42,7 +42,12 @@ annotate view ZC_MaintNotificationTP with
                   type: #FIELDGROUP_REFERENCE,
                   label: 'Equipment Details',
                   targetQualifier: 'EquipGroup',
-                  position: 15 } ]
+                  position: 15 },
+                  { id: 'Attachments',
+                   type: #LINEITEM_REFERENCE,
+                   label: 'Attachments',
+                   targetElement: '_Attachment',
+                   position: 40 } ]
 
   @UI: { lineItem: [ { position: 10, importance: #HIGH },
                      { type: #FOR_ACTION, dataAction: 'changePriority',      label: 'Change Priority',      position: 10 },

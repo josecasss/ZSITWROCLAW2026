@@ -1,46 +1,55 @@
 projection implementation in class ZBP_C_MaintNotification unique;
-strict ( 2 );
-extensible;
-use draft;
-use side effects;
-define behavior for ZC_MaintNotificationTP alias MaintNotification
-extensible
-use etag
-{
-  use create;
-  use update;
-  use delete;
+  strict ( 2 );
+  extensible;
+  use draft;
+  use side effects;
 
-  use association _MaintItem { create; with draft; }
-
-  use action Edit;
-  use action Activate;
-  use action Discard;
-  use action Resume;
-  use action Prepare;
-  use action changePriority;
-  use action reassignTechnician;
-  use action createFromTemplate;
-  use action startWork;
-  use action complete;
-  use action cancelNotification;
-  use action reOpen;
-
-  side effects
+  define behavior for ZC_MaintNotificationTP alias MaintNotification
+  extensible
+  use etag
   {
-    field TechnicianID affects field TechFirstName,
-                             field TechLastName,
-                             field TechEmail,
-                             field TechPhone,
-                             field TechAvailability;
-  }
-}
+    use create;
+    use update;
+    use delete;
 
-define behavior for ZC_MaintItemTP alias MaintItem
-{
-  use update;
-  use delete;
-  use association _Notification { with draft; }
-  use action markItemCompleted;
-  use action markItemCancelled;
-}
+    use association _MaintItem  { create; with draft; }
+    use association _Attachment { create; with draft; }
+
+    use action Edit;
+    use action Activate;
+    use action Discard;
+    use action Resume;
+    use action Prepare;
+    use action changePriority;
+    use action reassignTechnician;
+    use action createFromTemplate;
+    use action startWork;
+    use action complete;
+    use action cancelNotification;
+    use action reOpen;
+
+    side effects
+    {
+      field TechnicianID affects field TechFirstName,
+                               field TechLastName,
+                               field TechEmail,
+                               field TechPhone,
+                               field TechAvailability;
+    }
+  }
+
+  define behavior for ZC_MaintItemTP alias MaintItem
+  {
+    use update;
+    use delete;
+    use association _Notification { with draft; }
+    use action markItemCompleted;
+    use action markItemCancelled;
+  }
+
+  define behavior for ZC_MaintAttachmentTP alias MaintAttachment
+  {
+    use update;
+    use delete;
+    use association _Notification { with draft; }
+  }

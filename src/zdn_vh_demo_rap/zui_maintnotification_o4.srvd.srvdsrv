@@ -14,4 +14,5 @@ define service ZUI_MaintNotification_O4
   expose ZI_ActivityCodeVH      as ActivityCodeVH;
   expose ZI_SparePartVH         as SparePartVH;
   expose ZI_DN_TECHNICIANSVH    as TechnicianVH;
+  expose ZC_MaintAttachmentTP   as MaintAttachment;
 }
