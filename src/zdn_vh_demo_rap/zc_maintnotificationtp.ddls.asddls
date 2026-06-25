@@ -7,6 +7,8 @@
 
 @ObjectModel.sapObjectNodeType.name: 'ZMAINT_NOTIFA'
 @Search.searchable: true
+@OData.applySupportedForAggregation: #FULL
+
 define root view entity ZC_MaintNotificationTP
   provider contract transactional_query
   as projection on ZR_MaintNotificationTP
@@ -37,22 +39,25 @@ define root view entity ZC_MaintNotificationTP
       _Status.StatusText       as StatusText,
 
       StatusCriticality,
-      
+
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
       Description,
       SlaHours,
-              
-        @Semantics.name.givenName: true          
-        _Technician.FirstName     as TechFirstName,
 
-        @Semantics.name.familyName: true         
-        _Technician.LastName      as TechLastName,
-        @Semantics.eMail.address: true 
-        _Technician.Email         as TechEmail,    
-        @Semantics.telephone.type: [#CELL]  
-        _Technician.Phone         as TechPhone,    
-        _Technician.Availability  as TechAvailability,
+      @Semantics.name.givenName: true
+      _Technician.FirstName    as TechFirstName,
+
+      @Semantics.name.familyName: true
+      _Technician.LastName     as TechLastName,
+
+      @Semantics.eMail.address: true
+      _Technician.Email        as TechEmail,
+
+      @Semantics.telephone.type: [#CELL]
+      _Technician.Phone        as TechPhone,
+
+      _Technician.Availability as TechAvailability,
 
       @Semantics.user.createdBy: true
       CreatedBy,

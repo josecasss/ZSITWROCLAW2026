@@ -1,0 +1,91 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName      : 'Notification',
+  typeNamePlural: 'Notifications Analytics'
+}
+
+@UI.chart: [{
+  qualifier          : 'NotifByStatus',
+  title              : 'SLA Hours by Status',
+  description        : 'Total SLA hours grouped by notification status',
+  chartType          : #COLUMN,
+  measures           : ['SlaHours'],
+  dimensions         : ['Status'],
+  measureAttributes  : [{ measure: 'SlaHours', role: #AXIS_1 }],
+  dimensionAttributes: [{ dimension: 'Status', role: #CATEGORY }]
+},{
+  qualifier          : 'NotifByPriority',
+  title              : 'SLA Hours by Priority',
+  description        : 'Total SLA hours grouped by notification priority',
+  chartType          : #BAR,
+  measures           : ['SlaHours'],
+  dimensions         : ['Priority'],
+  measureAttributes  : [{ measure: 'SlaHours', role: #AXIS_1 }],
+  dimensionAttributes: [{ dimension: 'Priority', role: #CATEGORY }]
+}]
+
+@UI.presentationVariant: [{
+  qualifier     : 'PV_Chart',
+  sortOrder     : [{ by: 'Status', direction: #ASC }],
+  visualizations: [{ type: #AS_CHART, qualifier: 'NotifByStatus' }, { type: #AS_LINEITEM }]
+}]
+
+@UI.selectionVariant: [{
+  qualifier: 'All',
+  text     : 'All'
+}]
+
+@UI.selectionPresentationVariant: [{
+  qualifier                   : 'SPV_Default',
+  text                        : 'All',
+  selectionVariantQualifier   : 'All',
+  presentationVariantQualifier: 'PV_Chart'
+}]
+
+annotate view ZC_MaintNotifAnalTP with
+{
+  @UI.hidden: true
+  NotifUUID;
+
+  @EndUserText.label: 'Plant'
+  @UI.lineItem:       [{ position: 10 }]
+  @UI.selectionField: [{ position: 10 }]
+  PlantID;
+
+  @UI.hidden: true
+  PlantName;
+
+  @EndUserText.label: 'Priority'
+  @UI.lineItem:       [{ position: 20 }]
+  @UI.selectionField: [{ position: 20 }]
+  @UI.textArrangement: #TEXT_ONLY
+  Priority;
+
+  @UI.hidden: true
+  PriorityText;
+
+  @EndUserText.label: 'Status'
+  @UI.lineItem:       [{ position: 30 }]
+  @UI.selectionField: [{ position: 30 }]
+  @UI.textArrangement: #TEXT_ONLY
+  Status;
+
+  @UI.hidden: true
+  StatusText;
+
+  @EndUserText.label: 'Technician'
+  @UI.lineItem:       [{ position: 35 }]
+  @UI.selectionField: [{ position: 35 }]
+  TechnicianID;
+
+  @UI.hidden: true
+  TechFirstName;
+
+  @UI.hidden: true
+  TechLastName;
+
+  @EndUserText.label: 'SLA Hours'
+  @UI.lineItem: [{ position: 40 }]
+  SlaHours;
+}

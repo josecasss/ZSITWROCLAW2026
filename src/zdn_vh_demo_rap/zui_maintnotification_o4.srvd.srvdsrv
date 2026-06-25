@@ -1,5 +1,5 @@
 @EndUserText: {
-    label: 'Service Definition for ZC_MaintNotificationTP'
+    label: 'Service Definition MaintNotificationTP'
   }
 @ObjectModel: {
     leadingEntity: {
@@ -15,4 +15,5 @@ define service ZUI_MaintNotification_O4
   expose ZI_SparePartVH         as SparePartVH;
   expose ZI_DN_TECHNICIANSVH    as TechnicianVH;
   expose ZC_MaintAttachmentTP   as MaintAttachment;
+  expose ZC_MaintNotifAnalTP    as MaintNotificationAnal;
 }

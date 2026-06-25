@@ -14,7 +14,12 @@
 ]
 
 @UI.presentationVariant: [
-  { qualifier: 'PV_All', sortOrder: [{ by: 'Priority', direction: #ASC }], visualizations: [{ type: #AS_LINEITEM }] }
+  { qualifier: 'PV_All',
+    sortOrder: [{ by: 'Priority', direction: #ASC }],
+    visualizations: [{ type: #AS_LINEITEM }] }
+//  { qualifier: 'PV_Chart',
+//    sortOrder: [{ by: 'Status', direction: #ASC }],
+//    visualizations: [{ type: #AS_CHART, qualifier: 'NotifByStatus' }, { type: #AS_LINEITEM }] }\r
 ]
 
 @UI.selectionPresentationVariant: [
@@ -23,42 +28,29 @@
   { qualifier: 'SPV_High',     text: 'High',      selectionVariantQualifier: 'High',     presentationVariantQualifier: 'PV_All' },
   { qualifier: 'SPV_Medium',   text: 'Medium',    selectionVariantQualifier: 'Medium',   presentationVariantQualifier: 'PV_All' },
   { qualifier: 'SPV_Low',      text: 'Low',       selectionVariantQualifier: 'Low',      presentationVariantQualifier: 'PV_All' }
+//  { qualifier: 'SPV_Chart',    text: 'Chart',     selectionVariantQualifier: 'All',      presentationVariantQualifier: 'PV_Chart' }
 ]
 
 annotate view ZC_MaintNotificationTP with
 {
-  @UI.facet: [ { id: 'Header', type: #IDENTIFICATION_REFERENCE, label: 'General Information', position: 10 },
-               { id: 'TechnicianDetails',
-                 type: #FIELDGROUP_REFERENCE,
-                 label: 'Technician Details',
-                 targetQualifier: 'TechGroup',
-                 position: 20 },
-               { id: 'MaintItems',
-                 type: #LINEITEM_REFERENCE,
-                 label: 'Maintenance Items',
-                 targetElement: '_MaintItem',
-                 position: 30 },
-                 { id: 'EquipDetails',
-                  type: #FIELDGROUP_REFERENCE,
-                  label: 'Equipment Details',
-                  targetQualifier: 'EquipGroup',
-                  position: 15 },
-                  { id: 'Attachments',
-                   type: #LINEITEM_REFERENCE,
-                   label: 'Attachments',
-                   targetElement: '_Attachment',
-                   position: 40 } ]
-
-  @UI: { lineItem: [ { position: 10, importance: #HIGH },
-                     { type: #FOR_ACTION, dataAction: 'changePriority',      label: 'Change Priority',      position: 10 },
-                     { type: #FOR_ACTION, dataAction: 'reassignTechnician',   label: 'Reassign Technician',  position: 20 },
-                     { type: #FOR_ACTION, dataAction: 'createFromTemplate',   label: 'Create From Template', position: 30 } ],
-         identification: [ { position: 10 },
-                           { type: #FOR_ACTION, dataAction: 'startWork',          label: 'Start Work',          position: 10 },
-                           { type: #FOR_ACTION, dataAction: 'complete',           label: 'Complete Work',       position: 20 },
-                           { type: #FOR_ACTION, dataAction: 'cancelNotification', label: 'Cancel Notification', position: 30 },
-                           { type: #FOR_ACTION, dataAction: 'reOpen',             label: 'Re Open',             position: 40 } ],
-         selectionField: [ { position: 10 } ] }
+  @UI.facet: [ { id: 'Header',           type: #IDENTIFICATION_REFERENCE, label: 'General Information',    position: 10 },
+               { id: 'TechnicianDetails',type: #FIELDGROUP_REFERENCE,     label: 'Technician Details',     targetQualifier: 'TechGroup',  position: 20 },
+               { id: 'MaintItems',       type: #LINEITEM_REFERENCE,       label: 'Maintenance Items',      targetElement: '_MaintItem',   position: 30 },
+               { id: 'Attachments',      type: #LINEITEM_REFERENCE,       label: 'Attachments',            targetElement: '_Attachment',  position: 40 } ]
+    
+      @UI: { lineItem:      [ { position: 10, importance: #HIGH },
+                              { type: #FOR_ACTION, dataAction: 'changePriority',     label: 'Change Priority',      position: 10 },
+                              { type: #FOR_ACTION, dataAction: 'reassignTechnician', label: 'Reassign Technician',  position: 20 },
+                              { type: #FOR_ACTION, dataAction: 'createFromTemplate', label: 'Create From Template', position: 30 } ],
+             identification: [
+    { position: 10, importance: #HIGH},
+    { type: #FOR_ACTION_GROUP, actionGroupId: 'LifecycleGroupOP', label: 'Notification Processing', position: 10 },
+    { type: #FOR_ACTION, dataAction: 'startWork',          label: 'Start Work',          actionGroupId: 'LifecycleGroupOP', position: 10 },
+    { type: #FOR_ACTION, dataAction: 'complete',           label: 'Complete Work',       actionGroupId: 'LifecycleGroupOP', position: 20 },
+    { type: #FOR_ACTION, dataAction: 'cancelNotification', label: 'Cancel Notification', actionGroupId: 'LifecycleGroupOP', position: 30 },
+    { type: #FOR_ACTION, dataAction: 'reOpen',             label: 'Re Open',             actionGroupId: 'LifecycleGroupOP', position: 40 }
+  ],
+             selectionField: [ { position: 10 } ] }
   @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_PlantVH', element: 'PlantID' },
                                        additionalBinding: [ { localElement: 'PlantID', element: 'PlantID', usage: #RESULT } ] }]
   @UI.textArrangement: #TEXT_LAST
@@ -78,8 +70,8 @@ annotate view ZC_MaintNotificationTP with
   EquipmentID;
 
   @EndUserText.label: 'Equipment Description'
-@UI.fieldGroup: [ { qualifier: 'EquipGroup', position: 20 } ]
-EquipmentText;
+  @UI.fieldGroup: [ { qualifier: 'EquipGroup', position: 20 } ]
+  EquipmentText;
 
   @EndUserText.label: 'Damage Code'
   @UI.identification: [ { position: 30 } ]
@@ -88,11 +80,10 @@ EquipmentText;
   DamageCodeID;
 
   @EndUserText.label: 'Technician'
-  @UI.lineItem:       [ { position: 40,  label: 'Technician', importance: #HIGH } ]
-  @UI.identification: [ { position: 40,  label: 'Technician' } ]
+  @UI.lineItem:       [ { position: 40, label: 'Technician', importance: #HIGH } ]
+  @UI.identification: [ { position: 40, label: 'Technician' } ]
   @UI.selectionField: [ { position: 11 } ]
-  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_TECHNICIANSVH', element: 'TechnicianId'
-  } } ]
+  @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_DN_TECHNICIANSVH', element: 'TechnicianId' } } ]
   TechnicianID;
 
   @Consumption.valueHelpDefinition: [ { entity: { name: 'ZC_FuncLocVH', element: 'FuncLocId' },
@@ -132,7 +123,7 @@ EquipmentText;
 
   @EndUserText.label: 'SLA Hours'
   @UI.identification: [ { position: 80 } ]
-  @UI.lineItem: [ { position: 80 } ]
+  @UI.lineItem:       [ { position: 80 } ]
   SlaHours;
 
   @EndUserText.label: 'First Name'
@@ -161,7 +152,9 @@ EquipmentText;
   @UI.hidden: true
   CreatedBy;
 
-  @UI.hidden: true
+  @EndUserText.label: 'Created At'
+  @UI.selectionField: [ { position: 90 } ]
+  @Consumption.filter.selectionType: #INTERVAL
   CreatedAt;
 
   @UI.hidden: true
